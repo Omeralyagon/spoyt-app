@@ -5,7 +5,7 @@ Discover, save ("steal"), reuse and AI-generate complete, structured lesson plan
 
 > Final project — AI-Based Product Development course.
 
-- **Live app:** _add your Vercel URL here_
+- **Live app:** https://spoyt-app.vercel.app/
 - **Repo:** https://github.com/Omeralyagon/spoyt-app
 - **Demo logins** (after running the seed): `maya@stealmyflow.app` / `demo1234` (instructor), `admin@stealmyflow.app` / `demo1234` (admin)
 
