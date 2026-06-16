@@ -1,6 +1,6 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
-import { CATEGORIES, DIFFICULTIES } from "./constants";
+import { CATEGORIES, DIFFICULTIES, type Difficulty } from "./constants";
 import type { GeneratedFlow } from "@/types/database";
 
 /**
@@ -75,29 +75,50 @@ export function buildPromptString(req: FlowRequest): string {
   return `${req.durationMinutes}min ${req.level} ${req.classType} — goals: ${req.goals}`;
 }
 
+const SHAPE_HINT = `Return ONLY a single JSON object (no markdown, no code fences, no prose) with exactly this shape:
+{
+  "title": string,
+  "summary": string,
+  "category": one of ${JSON.stringify(CATEGORIES)},
+  "difficulty": one of ${JSON.stringify(DIFFICULTIES)},
+  "duration_minutes": number,
+  "steps": [ { "title": string, "content": string, "duration_minutes": number } ]
+}`;
+
+/** Robustly extract a JSON object from a model text response. */
+function parseFlowJson(raw: string): GeneratedFlow {
+  let s = raw.trim();
+  // strip ```json ... ``` fences if present
+  const fence = s.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fence) s = fence[1].trim();
+  // otherwise slice to the outermost braces
+  if (!s.startsWith("{")) {
+    const a = s.indexOf("{");
+    const b = s.lastIndexOf("}");
+    if (a !== -1 && b !== -1) s = s.slice(a, b + 1);
+  }
+  return JSON.parse(s) as GeneratedFlow;
+}
+
 async function generateWithAnthropic(req: FlowRequest): Promise<GeneratedFlow> {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    throw new Error("AI is not configured (missing ANTHROPIC_API_KEY).");
+  }
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const model = process.env.ANTHROPIC_MODEL || "claude-opus-4-8";
 
-  // `output_config` (structured outputs) may not yet be in the SDK param type;
-  // inject it and narrow the response to a non-streaming Message.
-  const params = {
+  const response = await client.messages.create({
     model,
     max_tokens: 4096,
-    system: SYSTEM_PROMPT,
-    output_config: {
-      format: { type: "json_schema", schema: FLOW_SCHEMA },
-    },
+    system: `${SYSTEM_PROMPT}\n\n${SHAPE_HINT}`,
     messages: [{ role: "user", content: buildUserPrompt(req) }],
-  } as unknown as Anthropic.MessageCreateParamsNonStreaming;
-
-  const response = (await client.messages.create(params)) as Anthropic.Message;
+  });
 
   const text = response.content.find((b) => b.type === "text");
   if (!text || text.type !== "text") {
     throw new Error("AI returned no content");
   }
-  return JSON.parse(text.text) as GeneratedFlow;
+  return parseFlowJson(text.text);
 }
 
 async function generateWithOpenAI(req: FlowRequest): Promise<GeneratedFlow> {
@@ -131,13 +152,29 @@ export async function generateFlow(req: FlowRequest): Promise<GeneratedFlow> {
       ? await generateWithOpenAI(req)
       : await generateWithAnthropic(req);
 
-  // Defensive: ensure step durations sum to the total.
-  const total = flow.steps.reduce(
-    (s, st) => s + (st.duration_minutes || 0),
-    0,
-  );
-  if (total > 0 && Math.abs(total - flow.duration_minutes) > 0) {
+  // Defensive normalization so the result always satisfies the DB constraints.
+  if (!CATEGORIES.includes(flow.category as (typeof CATEGORIES)[number])) {
+    flow.category = req.classType.includes("Yoga")
+      ? "Yoga"
+      : (CATEGORIES.find((c) => req.classType.includes(c)) ?? "Functional Training");
+  }
+  if (!DIFFICULTIES.includes(flow.difficulty)) {
+    flow.difficulty = (DIFFICULTIES.includes(req.level as Difficulty)
+      ? req.level
+      : "all-levels") as Difficulty;
+  }
+  flow.steps = (flow.steps ?? []).map((s) => ({
+    title: s.title ?? "Step",
+    content: s.content ?? "",
+    duration_minutes: Number(s.duration_minutes) || 0,
+  }));
+
+  const total = flow.steps.reduce((s, st) => s + (st.duration_minutes || 0), 0);
+  if (total > 0 && total !== flow.duration_minutes) {
     flow.duration_minutes = total;
+  }
+  if (!flow.duration_minutes || flow.duration_minutes < 1) {
+    flow.duration_minutes = req.durationMinutes;
   }
   return flow;
 }

@@ -57,7 +57,7 @@ export function AiStudio({ history }: { history: AiGeneration[] }) {
     } else if (res.error === "auth") {
       router.push("/login");
     } else {
-      toast.error(t("error"));
+      toast.error(res.error || t("error"));
     }
   }
 

@@ -13,13 +13,37 @@ async function requireUser() {
   return { supabase, user };
 }
 
-async function myProfileId(supabase: Awaited<ReturnType<typeof createClient>>, userId: string) {
+/**
+ * Returns the current user's profile id, creating the profile row if it is
+ * missing (e.g. the user signed up before the DB trigger existed).
+ */
+async function ensureProfileId(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  user: { id: string; email?: string; user_metadata?: Record<string, unknown> },
+): Promise<string | null> {
   const { data } = await supabase
     .from("profiles")
     .select("id")
-    .eq("user_id", userId)
+    .eq("user_id", user.id)
     .maybeSingle();
-  return data?.id ?? null;
+  if (data?.id) return data.id;
+
+  const meta = user.user_metadata ?? {};
+  const fullName =
+    (meta.full_name as string) ||
+    (meta.name as string) ||
+    user.email?.split("@")[0] ||
+    null;
+  const { data: created } = await supabase
+    .from("profiles")
+    .insert({
+      user_id: user.id,
+      full_name: fullName,
+      avatar_url: (meta.avatar_url as string) ?? null,
+    })
+    .select("id")
+    .single();
+  return created?.id ?? null;
 }
 
 // ---------------------------------------------------------------- engagement
@@ -138,7 +162,7 @@ async function insertFlowWithSteps(
 export async function createFlow(input: CreateFlowInput) {
   const { supabase, user } = await requireUser();
   if (!user) return { ok: false as const, error: "auth" };
-  const profileId = await myProfileId(supabase, user.id);
+  const profileId = await ensureProfileId(supabase, user);
   if (!profileId) return { ok: false as const, error: "profile" };
 
   try {
@@ -180,7 +204,7 @@ export async function saveGeneratedFlow(
 ) {
   const { supabase, user } = await requireUser();
   if (!user) return { ok: false as const, error: "auth" };
-  const profileId = await myProfileId(supabase, user.id);
+  const profileId = await ensureProfileId(supabase, user);
   if (!profileId) return { ok: false as const, error: "profile" };
 
   try {
