@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Kinetic Stillness — warm stone, ink, a single earthen accent */
+    --background: 40 32% 90%;
+    --foreground: 40 16% 11%;
+
+    --card: 40 38% 93%;
+    --card-foreground: 40 16% 11%;
+
+    --popover: 40 40% 95%;
+    --popover-foreground: 40 16% 11%;
+
+    /* clay — the held note */
+    --primary: 14 50% 46%;
+    --primary-foreground: 40 38% 96%;
+
+    --secondary: 40 20% 84%;
+    --secondary-foreground: 40 16% 16%;
+
+    --muted: 40 18% 85%;
+    --muted-foreground: 36 11% 38%;
+
+    --accent: 40 24% 82%;
+    --accent-foreground: 40 16% 14%;
+
+    --destructive: 4 64% 48%;
+    --destructive-foreground: 40 38% 96%;
+
+    --border: 40 18% 78%;
+    --input: 40 18% 76%;
+    --ring: 14 50% 46%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 40 14% 9%;
+    --foreground: 40 24% 90%;
+    --card: 40 14% 12%;
+    --card-foreground: 40 24% 90%;
+    --popover: 40 14% 12%;
+    --popover-foreground: 40 24% 90%;
+    --primary: 14 56% 56%;
+    --primary-foreground: 40 14% 9%;
+    --secondary: 40 10% 18%;
+    --secondary-foreground: 40 24% 90%;
+    --muted: 40 10% 18%;
+    --muted-foreground: 40 12% 60%;
+    --accent: 40 10% 20%;
+    --accent-foreground: 40 24% 90%;
+    --destructive: 4 60% 50%;
+    --destructive-foreground: 40 24% 90%;
+    --border: 40 10% 22%;
+    --input: 40 10% 24%;
+    --ring: 14 56% 56%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "cv01";
+  }
+
+  /* Logical-property helpers so layouts mirror correctly in RTL */
+  h1, h2, h3, h4 {
+    @apply font-serif tracking-tight;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-serif), Georgia, serif;
+  }
+  .label-mono {
+    font-family: var(--font-mono), monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+  }
+  .paper-grain {
+    background-image: radial-gradient(
+      hsl(var(--foreground) / 0.025) 1px,
+      transparent 1px
+    );
+    background-size: 4px 4px;
+  }
+}
+
+/* Skeleton shimmer */
+.skeleton {
+  @apply relative overflow-hidden bg-muted;
+}
+.skeleton::after {
+  content: "";
+  @apply absolute inset-0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    hsl(var(--foreground) / 0.06),
+    transparent
+  );
+  animation: shimmer 1.6s infinite;
+}
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
