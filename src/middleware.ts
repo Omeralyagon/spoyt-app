@@ -1,7 +1,7 @@
 import createMiddleware from "next-intl/middleware";
 import { type NextRequest } from "next/server";
-import { routing } from "./src/i18n/routing";
-import { updateSession } from "./src/lib/supabase/middleware";
+import { routing } from "@/i18n/routing";
+import { updateSession } from "@/lib/supabase/middleware";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -11,6 +11,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Run on everything except static assets, API routes, auth callback and files.
-  matcher: ["/((?!api|auth|_next|_vercel|.*\\..*).*)"],
+  // Match the root and everything except static assets, API, auth callback, files.
+  matcher: ["/", "/((?!api|auth|_next|_vercel|.*\\..*).*)"],
 };
