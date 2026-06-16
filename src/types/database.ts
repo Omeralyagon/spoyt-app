@@ -37,6 +37,7 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["profiles"]["Insert"]>;
+        Relationships: [];
       };
       certifications: {
         Row: {
@@ -60,6 +61,7 @@ export interface Database {
         Update: Partial<
           Database["public"]["Tables"]["certifications"]["Insert"]
         >;
+        Relationships: [];
       };
       flows: {
         Row: {
@@ -89,6 +91,7 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["flows"]["Insert"]>;
+        Relationships: [];
       };
       flow_steps: {
         Row: {
@@ -108,16 +111,19 @@ export interface Database {
           duration_minutes?: number | null;
         };
         Update: Partial<Database["public"]["Tables"]["flow_steps"]["Insert"]>;
+        Relationships: [];
       };
       likes: {
         Row: { user_id: string; flow_id: string; created_at: string };
         Insert: { user_id: string; flow_id: string; created_at?: string };
         Update: Partial<Database["public"]["Tables"]["likes"]["Insert"]>;
+        Relationships: [];
       };
       steals: {
         Row: { user_id: string; flow_id: string; created_at: string };
         Insert: { user_id: string; flow_id: string; created_at?: string };
         Update: Partial<Database["public"]["Tables"]["steals"]["Insert"]>;
+        Relationships: [];
       };
       follows: {
         Row: {
@@ -131,6 +137,7 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["follows"]["Insert"]>;
+        Relationships: [];
       };
       ai_generations: {
         Row: {
@@ -154,19 +161,27 @@ export interface Database {
         Update: Partial<
           Database["public"]["Tables"]["ai_generations"]["Insert"]
         >;
+        Relationships: [];
       };
     };
     Views: {
       flow_stats: {
         Row: {
-          flow_id: string;
-          like_count: number;
-          steal_count: number;
+          flow_id: string | null;
+          like_count: number | null;
+          steal_count: number | null;
         };
+        Relationships: [];
       };
     };
-    Functions: Record<string, never>;
-    Enums: Record<string, never>;
+    Functions: {
+      is_admin: {
+        Args: Record<string, never>;
+        Returns: boolean;
+      };
+    };
+    Enums: { [_ in never]: never };
+    CompositeTypes: { [_ in never]: never };
   };
 }
 

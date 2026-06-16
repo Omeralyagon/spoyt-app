@@ -11,6 +11,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Run on everything except static assets, API routes and files.
-  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
+  // Run on everything except static assets, API routes, auth callback and files.
+  matcher: ["/((?!api|auth|_next|_vercel|.*\\..*).*)"],
 };
