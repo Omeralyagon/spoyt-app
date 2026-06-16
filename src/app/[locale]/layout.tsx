@@ -2,22 +2,30 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
-import { Frank_Ruhl_Libre, Heebo, Space_Mono } from "next/font/google";
+import { Bebas_Neue, Manrope, Heebo, Space_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { routing, localeDirection, type Locale } from "@/i18n/routing";
 import { SiteHeader } from "@/components/site-header";
+import { BottomNav } from "@/components/bottom-nav";
+import { getCurrentUser } from "@/lib/auth";
 import "../globals.css";
 
-const serif = Frank_Ruhl_Libre({
-  subsets: ["latin", "hebrew"],
-  weight: ["300", "400", "500", "700"],
-  variable: "--font-serif",
+const bebas = Bebas_Neue({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-bebas",
   display: "swap",
 });
-const sans = Heebo({
+const manrope = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-manrope",
+  display: "swap",
+});
+const heebo = Heebo({
   subsets: ["latin", "hebrew"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-sans",
+  weight: ["400", "500", "700", "800", "900"],
+  variable: "--font-heebo",
   display: "swap",
 });
 const mono = Space_Mono({
@@ -28,9 +36,9 @@ const mono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Steal My Flow — a living library of class flows",
+  title: "Steal My Flow — discover & steal the best class flows",
   description:
-    "Discover, save and reuse complete class flows from fitness & wellness instructors worldwide. Generate new flows with AI.",
+    "A premium social platform where fitness & wellness instructors discover, save and create professional class flows. Powered by AI.",
 };
 
 export function generateStaticParams() {
@@ -48,19 +56,30 @@ export default async function LocaleLayout({
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
   const dir = localeDirection[locale as Locale];
+  const user = await getCurrentUser();
 
   return (
     <html
       lang={locale}
       dir={dir}
-      className={`${serif.variable} ${sans.variable} ${mono.variable}`}
+      className={`dark ${bebas.variable} ${manrope.variable} ${heebo.variable} ${mono.variable}`}
       suppressHydrationWarning
     >
-      <body className="font-sans min-h-screen paper-grain">
+      <body className="font-sans min-h-screen">
         <NextIntlClientProvider>
-          <SiteHeader />
-          <main className="min-h-[calc(100vh-4rem)]">{children}</main>
+          <SiteHeader
+            signedIn={!!user}
+            profileId={user?.profile?.id ?? null}
+            fullName={user?.profile?.full_name ?? user?.email ?? null}
+            avatarUrl={user?.profile?.avatar_url ?? null}
+            isAdmin={user?.profile?.role === "admin"}
+          />
+          <main className="min-h-[calc(100vh-4rem)] pb-24 md:pb-0">
+            {children}
+          </main>
+          <BottomNav signedIn={!!user} profileId={user?.profile?.id ?? null} />
           <Toaster
+            theme="dark"
             position={dir === "rtl" ? "bottom-left" : "bottom-right"}
             toastOptions={{ className: "font-sans" }}
           />

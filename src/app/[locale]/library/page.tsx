@@ -35,7 +35,7 @@ export default async function LibraryPage({
 
   return (
     <div className="container py-10">
-      <h1 className="mb-8 font-serif text-3xl font-medium tracking-tight">
+      <h1 className="mb-8 font-display text-3xl font-medium tracking-tight">
         {t("title")}
       </h1>
 

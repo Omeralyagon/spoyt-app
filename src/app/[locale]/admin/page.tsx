@@ -31,7 +31,7 @@ export default async function AdminPage({
       <header className="mb-8 flex items-center gap-3">
         <ShieldCheck className="h-6 w-6 text-primary" />
         <div>
-          <h1 className="font-serif text-3xl font-medium tracking-tight">
+          <h1 className="font-display text-3xl font-medium tracking-tight">
             {t("title")}
           </h1>
           <p className="text-muted-foreground">{t("subtitle")}</p>

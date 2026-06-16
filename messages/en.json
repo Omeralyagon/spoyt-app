@@ -4,7 +4,9 @@
     "tagline": "Steal inspiration. Build better classes."
   },
   "nav": {
-    "feed": "Discover",
+    "home": "Home",
+    "discover": "Discover",
+    "feed": "Home",
     "create": "Create",
     "generate": "AI Studio",
     "library": "Library",
@@ -52,8 +54,13 @@
     "step2": "Steal the ones you love into your library",
     "step3": "Generate, adapt and teach"
   },
+  "discover": {
+    "title": "Discover",
+    "subtitle": "Browse flows by discipline",
+    "browseAll": "Browse all flows"
+  },
   "feed": {
-    "title": "Discover flows",
+    "title": "Your feed",
     "subtitle": "The community's most-loved class flows",
     "sortHot": "Trending",
     "sortNew": "Newest",

@@ -56,7 +56,7 @@ export default async function ProfilePage({
 
         <div className="flex-1">
           <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
-            <h1 className="font-serif text-2xl font-medium">
+            <h1 className="font-display text-2xl font-medium">
               {profile.full_name ?? "—"}
             </h1>
             {profile.verified && (
@@ -93,7 +93,7 @@ export default async function ProfilePage({
       {/* own certifications */}
       {isOwn && certs.length > 0 && (
         <section className="mt-8">
-          <h2 className="mb-3 font-serif text-xl">{t("certifications")}</h2>
+          <h2 className="mb-3 font-display text-xl">{t("certifications")}</h2>
           <ul className="space-y-2">
             {certs.map((c) => (
               <li
@@ -129,7 +129,7 @@ export default async function ProfilePage({
 
       {/* flows */}
       <section className="mt-8">
-        <h2 className="mb-5 font-serif text-xl">{t("flows")}</h2>
+        <h2 className="mb-5 font-display text-xl">{t("flows")}</h2>
         {view.flows.length ? (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {view.flows.map((f) => (
@@ -152,7 +152,7 @@ export default async function ProfilePage({
 function Stat({ n, label }: { n: number; label: string }) {
   return (
     <div className="text-center">
-      <p className="font-serif text-xl font-medium">{n}</p>
+      <p className="font-display text-xl font-medium">{n}</p>
       <p className="label-mono text-muted-foreground">{label}</p>
     </div>
   );

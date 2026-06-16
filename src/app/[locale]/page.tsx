@@ -26,7 +26,7 @@ export default async function HomePage({
       <section className="container relative overflow-hidden py-20 md:py-32">
         <div className="mx-auto max-w-3xl text-center">
           <p className="label-mono mb-6 text-primary">{t("heroKicker")}</p>
-          <h1 className="font-serif text-4xl font-medium leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
+          <h1 className="font-display text-4xl font-medium leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
             {t("heroTitle")}
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
@@ -91,7 +91,7 @@ export default async function HomePage({
 
       {/* How it works */}
       <section className="container py-12 md:py-20">
-        <h2 className="text-center font-serif text-3xl font-medium tracking-tight">
+        <h2 className="text-center font-display text-3xl font-medium tracking-tight">
           {t("stepsTitle")}
         </h2>
         <ol className="mx-auto mt-10 grid max-w-4xl gap-6 sm:grid-cols-3">

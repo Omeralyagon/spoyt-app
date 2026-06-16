@@ -44,7 +44,7 @@ export default async function GeneratePage({
         <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-primary">
           <span className="label-mono">AI</span>
         </div>
-        <h1 className="mt-3 font-serif text-3xl font-medium tracking-tight">
+        <h1 className="mt-3 font-display text-3xl font-medium tracking-tight">
           {t("title")}
         </h1>
         <p className="mt-1 text-muted-foreground">{t("subtitle")}</p>

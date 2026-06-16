@@ -41,7 +41,7 @@ export default async function FlowPage({
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/15 via-accent to-secondary">
-            <span className="font-serif text-3xl text-foreground/25">
+            <span className="font-display text-3xl text-foreground/25">
               {flow.category}
             </span>
           </div>
@@ -51,7 +51,7 @@ export default async function FlowPage({
         </Badge>
       </div>
 
-      <h1 className="font-serif text-3xl font-medium leading-tight tracking-tight md:text-4xl">
+      <h1 className="font-display text-3xl font-medium leading-tight tracking-tight md:text-4xl">
         {flow.title}
       </h1>
 
@@ -138,7 +138,7 @@ export default async function FlowPage({
       {/* structure */}
       {flow.steps.length > 0 && (
         <section className="mt-10">
-          <h2 className="mb-5 font-serif text-2xl font-medium">
+          <h2 className="mb-5 font-display text-2xl font-medium">
             {t("structure")}
           </h2>
           <ol className="space-y-3">

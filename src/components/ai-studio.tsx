@@ -173,7 +173,7 @@ export function AiStudio({ history }: { history: AiGeneration[] }) {
         {!loading && !result && (
           <div className="flex h-full min-h-[320px] flex-col items-center justify-center rounded-xl border border-dashed border-border/80 p-10 text-center">
             <Wand2 className="mb-4 h-8 w-8 text-muted-foreground" />
-            <p className="font-serif text-lg">{t("subtitle")}</p>
+            <p className="font-display text-lg">{t("subtitle")}</p>
           </div>
         )}
 
@@ -182,7 +182,7 @@ export function AiStudio({ history }: { history: AiGeneration[] }) {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <Badge className="mb-2">{result.flow.category}</Badge>
-                <h2 className="font-serif text-2xl font-medium leading-tight">
+                <h2 className="font-display text-2xl font-medium leading-tight">
                   {result.flow.title}
                 </h2>
               </div>

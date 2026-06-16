@@ -20,7 +20,7 @@ export default async function CreatePage({
   return (
     <div className="container max-w-3xl py-10">
       <header className="mb-8">
-        <h1 className="font-serif text-3xl font-medium tracking-tight">
+        <h1 className="font-display text-3xl font-medium tracking-tight">
           {t("title")}
         </h1>
         <p className="mt-1 text-muted-foreground">{t("subtitle")}</p>

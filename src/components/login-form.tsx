@@ -63,7 +63,7 @@ export function LoginForm({ initialMode }: { initialMode: "login" | "signup" }) 
 
   return (
     <div className="w-full">
-      <h1 className="font-serif text-3xl font-medium tracking-tight">
+      <h1 className="font-display text-3xl font-medium tracking-tight">
         {isSignup ? t("signupTitle") : t("loginTitle")}
       </h1>
       <p className="mt-1.5 text-muted-foreground">

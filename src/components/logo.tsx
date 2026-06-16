@@ -24,7 +24,7 @@ export function Logo({ className }: { className?: string }) {
           />
         </svg>
       </span>
-      <span className="font-serif text-lg font-medium tracking-tight">
+      <span className="font-display text-lg font-medium tracking-tight">
         Steal&nbsp;My&nbsp;Flow
       </span>
     </Link>

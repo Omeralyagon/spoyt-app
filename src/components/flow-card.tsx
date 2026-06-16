@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { Heart, Bookmark, Clock, BadgeCheck } from "lucide-react";
+import { Heart, Zap, Clock, BadgeCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Link, useRouter } from "@/i18n/navigation";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toggleLike, toggleSteal } from "@/lib/actions";
 import { cn, initials } from "@/lib/utils";
@@ -20,7 +20,6 @@ export function FlowCard({
   liked?: boolean;
   stolen?: boolean;
 }) {
-  const t = useTranslations("flow");
   const td = useTranslations("difficulty");
   const tc = useTranslations("common");
   const tAuth = useTranslations("auth");
@@ -32,22 +31,20 @@ export function FlowCard({
     on: stolen,
     n: flow.steal_count,
   });
+  const [stealBurst, setStealBurst] = useState(0);
 
-  function engage(
-    kind: "like" | "steal",
-    e: React.MouseEvent,
-  ) {
+  function engage(kind: "like" | "steal", e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
     const action = kind === "like" ? toggleLike : toggleSteal;
     const setter = kind === "like" ? setLikeState : setStealState;
     const cur = kind === "like" ? likeState : stealState;
-    // optimistic
     setter({ on: !cur.on, n: cur.n + (cur.on ? -1 : 1) });
+    if (kind === "steal" && !cur.on) setStealBurst((b) => b + 1);
     start(async () => {
       const res = await action(flow.id);
       if (!res.ok) {
-        setter(cur); // rollback
+        setter(cur);
         if (res.error === "auth") {
           toast.error(tAuth("loginRequired"));
           router.push("/login");
@@ -57,96 +54,146 @@ export function FlowCard({
   }
 
   return (
-    <Link
-      href={`/flow/${flow.id}`}
-      className="group flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all hover:-translate-y-0.5 hover:shadow-md"
+    <motion.div
+      whileHover={{ y: -4 }}
+      transition={{ type: "spring", stiffness: 300, damping: 24 }}
+      className="snap-card"
     >
-      {/* cover */}
-      <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+      <Link
+        href={`/flow/${flow.id}`}
+        className="group relative block aspect-[4/5] overflow-hidden rounded-3xl border border-border/60 bg-card"
+      >
+        {/* cover */}
         {flow.cover_image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={flow.cover_image}
             alt=""
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/15 via-accent to-secondary">
-            <span className="font-serif text-2xl text-foreground/30">
-              {flow.category}
-            </span>
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/25 via-card to-secondary/20" />
         )}
-        <Badge className="absolute start-3 top-3 bg-background/85 text-foreground backdrop-blur">
+        {/* legibility gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/30" />
+
+        {/* category chip */}
+        <span className="absolute start-4 top-4 rounded-full bg-black/45 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
           {flow.category}
-        </Badge>
-      </div>
+        </span>
+        <span className="absolute end-4 top-4 inline-flex items-center gap-1 rounded-full bg-black/45 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-md">
+          <Clock className="h-3.5 w-3.5" />
+          {flow.duration_minutes}
+          {tc("minutes")}
+        </span>
 
-      {/* body */}
-      <div className="flex flex-1 flex-col p-4">
-        <h3 className="line-clamp-2 font-serif text-lg leading-snug">
-          {flow.title}
-        </h3>
-
-        <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1">
-            <Clock className="h-3.5 w-3.5" />
-            {flow.duration_minutes} {tc("minutes")}
-          </span>
-          <span>·</span>
-          <span>{td(flow.difficulty)}</span>
-        </div>
-
-        {/* creator */}
-        <div className="mt-3 flex items-center gap-2">
-          <Avatar className="h-6 w-6">
-            {flow.creator?.avatar_url && (
-              <AvatarImage src={flow.creator.avatar_url} alt="" />
-            )}
-            <AvatarFallback className="text-[10px]">
-              {initials(flow.creator?.full_name)}
-            </AvatarFallback>
-          </Avatar>
-          <span className="truncate text-xs text-muted-foreground">
-            {flow.creator?.full_name ?? "—"}
-          </span>
-          {flow.creator?.verified && (
-            <BadgeCheck className="h-3.5 w-3.5 text-primary" />
-          )}
-        </div>
-
-        {/* actions */}
-        <div className="mt-4 flex items-center gap-1 border-t border-border/70 pt-3">
-          <button
+        {/* action rail */}
+        <div className="absolute bottom-28 end-3 z-10 flex flex-col items-center gap-4">
+          <ActionButton
             onClick={(e) => engage("like", e)}
+            active={likeState.on}
+            count={likeState.n}
             disabled={isPending}
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs transition-colors hover:bg-accent",
-              likeState.on ? "text-primary" : "text-muted-foreground",
-            )}
-            aria-label={t("like")}
           >
             <Heart
-              className={cn("h-4 w-4", likeState.on && "fill-current")}
+              className={cn("h-6 w-6", likeState.on && "fill-current")}
             />
-            {likeState.n}
-          </button>
-          <button
-            onClick={(e) => engage("steal", e)}
-            disabled={isPending}
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs transition-colors hover:bg-accent",
-              stealState.on ? "text-primary" : "text-muted-foreground",
-            )}
-            aria-label={t("steal")}
-          >
-            <Bookmark
-              className={cn("h-4 w-4", stealState.on && "fill-current")}
-            />
-            {stealState.n}
-          </button>
+          </ActionButton>
+
+          <div className="relative">
+            <ActionButton
+              onClick={(e) => engage("steal", e)}
+              active={stealState.on}
+              count={stealState.n}
+              variant="primary"
+              disabled={isPending}
+            >
+              <Zap className={cn("h-6 w-6", stealState.on && "fill-current")} />
+            </ActionButton>
+            <AnimatePresence>
+              {stealBurst > 0 && (
+                <motion.span
+                  key={stealBurst}
+                  initial={{ scale: 0.7, opacity: 0.7 }}
+                  animate={{ scale: 2.3, opacity: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                  className="pointer-events-none absolute left-1/2 top-5 h-12 w-12 -translate-x-1/2 rounded-full bg-primary/40"
+                />
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-      </div>
-    </Link>
+
+        {/* content */}
+        <div className="absolute inset-x-0 bottom-0 p-5">
+          <h3 className="line-clamp-2 font-display text-2xl leading-none text-white">
+            {flow.title}
+          </h3>
+          <div className="mt-2 flex items-center gap-2 text-xs text-white/75">
+            <span>{td(flow.difficulty)}</span>
+          </div>
+          <div className="mt-3 flex items-center gap-2">
+            <Avatar className="h-7 w-7 ring-1 ring-white/30">
+              {flow.creator?.avatar_url && (
+                <AvatarImage src={flow.creator.avatar_url} alt="" />
+              )}
+              <AvatarFallback className="bg-white/15 text-[10px] text-white">
+                {initials(flow.creator?.full_name)}
+              </AvatarFallback>
+            </Avatar>
+            <span className="truncate text-sm font-medium text-white/90">
+              {flow.creator?.full_name ?? "—"}
+            </span>
+            {flow.creator?.verified && (
+              <BadgeCheck className="h-4 w-4 text-primary" />
+            )}
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
+}
+
+function ActionButton({
+  children,
+  onClick,
+  active,
+  count,
+  variant = "ghost",
+  disabled,
+}: {
+  children: React.ReactNode;
+  onClick: (e: React.MouseEvent) => void;
+  active: boolean;
+  count: number;
+  variant?: "ghost" | "primary";
+  disabled?: boolean;
+}) {
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <motion.button
+        onClick={onClick}
+        disabled={disabled}
+        whileTap={{ scale: 0.8 }}
+        animate={active ? { scale: [1, 1.3, 1] } : { scale: 1 }}
+        transition={{ duration: 0.35 }}
+        className={cn(
+          "flex h-12 w-12 items-center justify-center rounded-full backdrop-blur-md transition-colors",
+          variant === "primary" && active
+            ? "bg-primary text-primary-foreground glow-primary"
+            : variant === "primary"
+              ? "bg-primary/90 text-primary-foreground"
+              : active
+                ? "bg-white/20 text-primary"
+                : "bg-black/40 text-white hover:bg-black/55",
+        )}
+      >
+        {children}
+      </motion.button>
+      <span className="text-xs font-semibold text-white drop-shadow">
+        {count}
+      </span>
+    </div>
   );
 }
