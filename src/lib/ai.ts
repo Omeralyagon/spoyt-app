@@ -145,12 +145,42 @@ async function generateWithOpenAI(req: FlowRequest): Promise<GeneratedFlow> {
   return JSON.parse(data.choices[0].message.content) as GeneratedFlow;
 }
 
+async function generateWithGemini(req: FlowRequest): Promise<GeneratedFlow> {
+  if (!process.env.GEMINI_API_KEY) {
+    throw new Error("AI is not configured (missing GEMINI_API_KEY).");
+  }
+  const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\n${SHAPE_HINT}` }] },
+        contents: [{ role: "user", parts: [{ text: buildUserPrompt(req) }] }],
+        generationConfig: { responseMimeType: "application/json", temperature: 0.7 },
+      }),
+    },
+  );
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Gemini error ${res.status}: ${body.slice(0, 200)}`);
+  }
+  const data = await res.json();
+  const text: string | undefined =
+    data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) throw new Error("Gemini returned no content");
+  return parseFlowJson(text);
+}
+
 export async function generateFlow(req: FlowRequest): Promise<GeneratedFlow> {
   const provider = (process.env.AI_PROVIDER || "anthropic").toLowerCase();
   const flow =
     provider === "openai"
       ? await generateWithOpenAI(req)
-      : await generateWithAnthropic(req);
+      : provider === "gemini"
+        ? await generateWithGemini(req)
+        : await generateWithAnthropic(req);
 
   // Defensive normalization so the result always satisfies the DB constraints.
   if (!CATEGORIES.includes(flow.category as (typeof CATEGORIES)[number])) {
