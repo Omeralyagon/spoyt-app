@@ -1,0 +1,74 @@
+erDiagram
+    profiles ||--o{ certifications : "submits"
+    profiles ||--o{ flows : "creates"
+    flows ||--o{ flow_steps : "contains"
+    flows ||--o{ likes : "receives"
+    flows ||--o{ steals : "receives"
+    profiles ||--o{ follows : "is followed"
+    flows ||--o{ ai_generations : "saved as"
+
+    profiles {
+        uuid id PK
+        uuid user_id FK "auth.users"
+        text full_name
+        text avatar_url
+        text bio
+        text specialization
+        text role "instructor | admin"
+        boolean verified
+        timestamptz created_at
+    }
+    certifications {
+        uuid id PK
+        uuid profile_id FK
+        text title
+        text file_url
+        text status "pending|approved|rejected"
+        timestamptz reviewed_at
+        timestamptz created_at
+    }
+    flows {
+        uuid id PK
+        uuid creator_id FK
+        text title
+        text description
+        text category
+        text difficulty
+        int duration_minutes
+        text cover_image
+        text youtube_url
+        text visibility "public | private"
+        timestamptz created_at
+    }
+    flow_steps {
+        uuid id PK
+        uuid flow_id FK
+        int order_index
+        text title
+        text content
+        int duration_minutes
+    }
+    likes {
+        uuid user_id PK,FK "auth.users"
+        uuid flow_id PK,FK
+        timestamptz created_at
+    }
+    steals {
+        uuid user_id PK,FK "auth.users"
+        uuid flow_id PK,FK
+        timestamptz created_at
+    }
+    follows {
+        uuid follower_id PK,FK "auth.users"
+        uuid following_id PK,FK "profiles"
+        timestamptz created_at
+    }
+    ai_generations {
+        uuid id PK
+        uuid user_id FK "auth.users"
+        text prompt
+        jsonb params
+        jsonb generated_content
+        uuid saved_flow_id FK
+        timestamptz created_at
+    }

@@ -1,82 +1,40 @@
-# DESIGN.md - Spoyt Design System
+# DESIGN.md — Steal My Flow design system
 
-## Colors
+The visual language is **Kinetic Stillness** — warm stone, ink, and a single
+earthen accent; premium, editorial, and calm. Full philosophy in
+[`design/KINETIC_STILLNESS.md`](design/KINETIC_STILLNESS.md).
 
-| Variable | Value | Usage |
-|----------|-------|-------|
-| --primary | #4CAF50 | Primary buttons, active states |
-| --primary-dark | #388E3C | Hover states |
-| --primary-light | #C8E6C9 | Light accents |
-| --background | #1a1a2e | Main background |
-| --surface | #16213e | Cards and surfaces |
-| --surface-light | #0f3460 | Elevated surfaces |
-| --text-primary | #FFFFFF | Main text |
-| --text-secondary | #B0BEC5 | Secondary text |
-| --text-hint | #78909C | Hint/placeholder text |
-| --error | #F44336 | Error states |
-| --warning | #FF9800 | Warning states |
-| --success | #4CAF50 | Success states |
-| --border | rgba(255,255,255,0.1) | Borders |
+## Color tokens (HSL CSS variables, light)
+
+| Token | Value | Usage |
+|------|-------|-------|
+| `--background` | `40 32% 90%` | App background (bone) |
+| `--foreground` | `40 16% 11%` | Primary text (ink) |
+| `--card` | `40 38% 93%` | Cards / surfaces |
+| `--primary` | `14 50% 46%` | Clay accent — buttons, active states |
+| `--muted-foreground` | `36 11% 38%` | Secondary text |
+| `--border` | `40 18% 78%` | Borders / hairlines |
+| `--destructive` | `4 64% 48%` | Errors |
+
+A `.dark` theme is defined with the same token names.
 
 ## Typography
 
-- **Font Family:** 'Rubik', sans-serif (supports Hebrew RTL)
-- **Direction:** RTL (Right-to-Left)
+- **Display / headings:** Frank Ruhl Libre (serif, supports Hebrew + Latin) → `--font-serif`
+- **Body / UI:** Heebo (sans, Hebrew + Latin) → `--font-sans`
+- **Labels / clinical markers:** Space Mono → `--font-mono` (`.label-mono`)
 
-| Style | Size | Weight |
-|-------|------|--------|
-| Heading 1 | 28px | 700 |
-| Heading 2 | 22px | 600 |
-| Heading 3 | 18px | 600 |
-| Body | 16px | 400 |
-| Caption | 14px | 400 |
-| Small | 12px | 400 |
+## Direction
 
-## Spacing
-
-| Variable | Value |
-|----------|-------|
-| --spacing-xs | 4px |
-| --spacing-sm | 8px |
-| --spacing-md | 16px |
-| --spacing-lg | 24px |
-| --spacing-xl | 32px |
-| --spacing-xxl | 48px |
-
-## Border Radius
-
-| Variable | Value |
-|----------|-------|
-| --radius-sm | 8px |
-| --radius-md | 12px |
-| --radius-lg | 16px |
-| --radius-xl | 24px |
-| --radius-full | 50% |
+Fully bidirectional. `dir` is set per locale (`he` → RTL, `en` → LTR) and layouts
+use logical properties (`ms-*`, `ps-*`, `start/end`) so they mirror correctly.
 
 ## Components
 
-### Buttons
+shadcn/ui primitives (`src/components/ui/*`): button, card, input, textarea,
+label, badge, avatar, tabs, select, skeleton — all themed via the tokens above.
 
-- **Primary Button:** Green background, white text, 12px radius
-- **Secondary Button:** Transparent, green border, green text
-- **Icon Button:** Circular, 48px
+## Radius & spacing
 
-### Cards (PlanCard)
-
-- Background: --surface
-- Border: 1px solid --border
-- Border radius: --radius-lg
-- Padding: --spacing-md
-
-### Input Fields
-
-- Background: rgba(255,255,255,0.05)
-- Border: 1px solid --border
-- Border radius: --radius-sm
-- Color: --text-primary
-
-### Navigation
-
-- Bottom navigation with 5 items: בית (Home), גלה (Discover), + (FAB), שלי (My), פרופיל (Profile)
-- Active state: --primary color
-- Height: 64px
+`--radius: 0.5rem` (md = radius−2px, sm = radius−4px). Tailwind spacing scale,
+generous negative space per the Kinetic Stillness philosophy.
