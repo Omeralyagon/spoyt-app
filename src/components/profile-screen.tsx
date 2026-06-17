@@ -23,6 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FlowCard } from "@/components/flow-card";
 import { FollowButton } from "@/components/follow-button";
 import { CertUpload } from "@/components/cert-upload";
+import { EditProfileDialog } from "@/components/edit-profile-dialog";
 import { EmptyState } from "@/components/empty-state";
 import { cn, initials, formatCount } from "@/lib/utils";
 import type { FlowCard as FlowCardData } from "@/lib/queries";
@@ -186,7 +187,16 @@ export function ProfileScreen(props: Props) {
               </Link>
             )}
             {isOwn && userIdGuard(props.userId) && (
-              <CertUpload profileId={profile.id} userId={props.userId!} />
+              <>
+                <EditProfileDialog
+                  userId={props.userId}
+                  fullName={profile.full_name}
+                  bio={profile.bio}
+                  specialization={profile.specialization}
+                  avatarUrl={profile.avatar_url}
+                />
+                <CertUpload profileId={profile.id} userId={props.userId} />
+              </>
             )}
           </div>
         </motion.div>
