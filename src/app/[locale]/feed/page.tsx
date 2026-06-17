@@ -1,10 +1,11 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Compass } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getFeedFlows, getViewerEngagement } from "@/lib/queries";
-import { FlowCard } from "@/components/flow-card";
-import { FeedControls } from "@/components/feed-controls";
+import { ImmersiveFeed, type FeedItem } from "@/components/immersive-feed";
 import { EmptyState } from "@/components/empty-state";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -25,38 +26,36 @@ export default async function FeedPage({
 
   const [flows, engagement] = await Promise.all([
     getFeedFlows(sort, category),
-    user ? getViewerEngagement(user.id) : Promise.resolve({ liked: [], stolen: [] }),
+    user
+      ? getViewerEngagement(user.id)
+      : Promise.resolve({ liked: [], stolen: [], following: [] }),
   ]);
   const liked = new Set(engagement.liked);
   const stolen = new Set(engagement.stolen);
+  const following = new Set(engagement.following);
 
-  return (
-    <div className="container py-10">
-      <header className="mb-8">
-        <h1 className="font-display text-3xl font-medium tracking-tight">
-          {t("title")}
-        </h1>
-        <p className="mt-1 text-muted-foreground">{t("subtitle")}</p>
-      </header>
-
-      <div className="mb-7">
-        <FeedControls sort={sort} category={category} />
+  if (flows.length === 0) {
+    return (
+      <div className="container py-16">
+        <EmptyState
+          icon={Compass}
+          title={t("empty")}
+          action={
+            <Button asChild>
+              <Link href="/create">{t("title")}</Link>
+            </Button>
+          }
+        />
       </div>
+    );
+  }
 
-      {flows.length === 0 ? (
-        <EmptyState icon={Compass} title={t("empty")} />
-      ) : (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {flows.map((flow) => (
-            <FlowCard
-              key={flow.id}
-              flow={flow}
-              liked={liked.has(flow.id)}
-              stolen={stolen.has(flow.id)}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  const items: FeedItem[] = flows.map((flow) => ({
+    flow,
+    liked: liked.has(flow.id),
+    stolen: stolen.has(flow.id),
+    following: flow.creator ? following.has(flow.creator.id) : false,
+  }));
+
+  return <ImmersiveFeed items={items} />;
 }

@@ -268,19 +268,22 @@ export async function getLibrary(
 
 export async function getViewerEngagement(
   userId: string,
-): Promise<{ liked: string[]; stolen: string[] }> {
+): Promise<{ liked: string[]; stolen: string[]; following: string[] }> {
   try {
     const supabase = await createClient();
-    const [{ data: likes }, { data: steals }] = await Promise.all([
-      supabase.from("likes").select("flow_id").eq("user_id", userId),
-      supabase.from("steals").select("flow_id").eq("user_id", userId),
-    ]);
+    const [{ data: likes }, { data: steals }, { data: follows }] =
+      await Promise.all([
+        supabase.from("likes").select("flow_id").eq("user_id", userId),
+        supabase.from("steals").select("flow_id").eq("user_id", userId),
+        supabase.from("follows").select("following_id").eq("follower_id", userId),
+      ]);
     return {
       liked: (likes ?? []).map((r) => r.flow_id as string),
       stolen: (steals ?? []).map((r) => r.flow_id as string),
+      following: (follows ?? []).map((r) => r.following_id as string),
     };
   } catch {
-    return { liked: [], stolen: [] };
+    return { liked: [], stolen: [], following: [] };
   }
 }
 

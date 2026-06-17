@@ -128,7 +128,17 @@
     "certRejected": "נדחה",
     "noBio": "אין עדיין תיאור.",
     "editProfile": "עריכת פרופיל",
-    "specialization": "התמחות"
+    "specialization": "התמחות",
+    "steals": "גניבות",
+    "likes": "לייקים",
+    "influence": "השפעה",
+    "achievements": "הישגים",
+    "featured": "תוכניות נבחרות",
+    "about": "אודות",
+    "verifiedPro": "מאומת",
+    "topCreator": "יוצר מוביל",
+    "risingStar": "כוכב עולה",
+    "flowMaster": "מאסטר Flow"
   },
   "ai": {
     "title": "סטודיו ה-AI",

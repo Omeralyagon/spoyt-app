@@ -128,7 +128,17 @@
     "certRejected": "Rejected",
     "noBio": "No bio yet.",
     "editProfile": "Edit profile",
-    "specialization": "Specialization"
+    "specialization": "Specialization",
+    "steals": "Steals",
+    "likes": "Likes",
+    "influence": "Influence",
+    "achievements": "Achievements",
+    "featured": "Featured flows",
+    "about": "About",
+    "verifiedPro": "Verified Pro",
+    "topCreator": "Top Creator",
+    "risingStar": "Rising Star",
+    "flowMaster": "Flow Master"
   },
   "ai": {
     "title": "AI Flow Studio",

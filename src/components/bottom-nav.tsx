@@ -1,9 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Home, Compass, Sparkles, Library, User } from "lucide-react";
+import { Home, Compass, Library, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
+import { Mascot } from "@/components/mascot";
 import { cn } from "@/lib/utils";
 
 export function BottomNav({
@@ -19,7 +20,7 @@ export function BottomNav({
   const items = [
     { href: "/feed", label: t("home"), icon: Home },
     { href: "/discover", label: t("discover"), icon: Compass },
-    { href: "/generate", label: t("create"), icon: Sparkles, center: true },
+    { href: "/generate", label: t("create"), icon: Home, center: true },
     {
       href: signedIn ? "/library" : "/login",
       label: t("library"),
@@ -51,11 +52,17 @@ export function BottomNav({
                 className="mx-1"
               >
                 <motion.span
-                  whileTap={{ scale: 0.88 }}
-                  whileHover={{ scale: 1.06 }}
-                  className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground glow-primary"
+                  animate={{ y: [0, -3, 0] }}
+                  transition={{
+                    duration: 2.4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  whileHover={{ scale: 1.12 }}
+                  whileTap={{ scale: 0.82, rotate: -6 }}
+                  className="-mt-7 flex h-16 w-16 items-center justify-center rounded-full border-4 border-background bg-primary glow-primary"
                 >
-                  <item.icon className="h-6 w-6" />
+                  <Mascot className="h-10 w-10" />
                 </motion.span>
               </Link>
             );
