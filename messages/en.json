@@ -56,7 +56,8 @@
   },
   "discover": {
     "title": "Discover",
-    "subtitle": "Browse flows by discipline",
+    "subtitle": "Explore flows by category and find inspiration from instructors around the world.",
+    "searchPlaceholder": "Search categories…",
     "browseAll": "Browse all flows"
   },
   "feed": {
