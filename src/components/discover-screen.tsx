@@ -3,55 +3,20 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { Search } from "lucide-react";
-import { useRouter } from "@/i18n/navigation";
+import { Search, ArrowRight } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { CATEGORIES } from "@/lib/constants";
-import type { Category } from "@/lib/constants";
 
-// Grid: 4 cols x 3 rows in discover-grid.png
-// Row 0: Yoga(0,0), Vinyasa Yoga(1,0), Power Yoga(2,0), Pilates(3,0)
-// Row 1: Pilates Reformer(0,1), Barre(1,1), Functional Training(2,1), HIIT(3,1)
-// Row 2: Strength(0,2), Mobility(1,2), Stretching(2,2)
-const GRID_POS: Record<string, { col: number; row: number }> = {
-  "Yoga":                { col: 0, row: 0 },
-  "Vinyasa Yoga":        { col: 1, row: 0 },
-  "Power Yoga":          { col: 2, row: 0 },
-  "Pilates":             { col: 3, row: 0 },
-  "Pilates Reformer":    { col: 0, row: 1 },
-  "Barre":               { col: 1, row: 1 },
-  "Functional Training": { col: 2, row: 1 },
-  "HIIT":                { col: 3, row: 1 },
-  "Strength":            { col: 0, row: 2 },
-  "Mobility":            { col: 1, row: 2 },
-  "Stretching":          { col: 2, row: 2 },
-};
-
-const CARD_BG: Record<string, string> = {
-  "Yoga":                "#0f9e6e",
-  "Vinyasa Yoga":        "#2dbd3d",
-  "Power Yoga":          "#e85c1a",
-  "Pilates":             "#8a2be2",
-  "Pilates Reformer":    "#7b2fd4",
-  "Barre":               "#d42f7b",
-  "Functional Training": "#e07318",
-  "HIIT":                "#d42020",
-  "Strength":            "#2060c8",
-  "Mobility":            "#18a8a8",
-  "Stretching":          "#1aad4a",
-};
+// Each category maps to its dedicated artwork in /public/categories.
+const imgFor = (cat: string) => `/categories/${cat.replace(/ /g, "_")}.png`;
 
 export function DiscoverScreen() {
   const t = useTranslations("discover");
-  const router = useRouter();
   const [q, setQ] = useState("");
 
   const cats = CATEGORIES.filter((c) =>
-    c.toLowerCase().includes(q.trim().toLowerCase())
+    c.toLowerCase().includes(q.trim().toLowerCase()),
   );
-
-  function handleCategoryClick(cat: Category) {
-    router.push(`/?category=${encodeURIComponent(cat)}`);
-  }
 
   return (
     <div className="container py-8">
@@ -74,55 +39,46 @@ export function DiscoverScreen() {
         </div>
       </motion.header>
 
-      {/* Category Grid — mirrors discover-grid.png layout */}
+      {/* Category cards */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {cats.map((cat, i) => {
-          const pos = GRID_POS[cat];
-          const bgColor = CARD_BG[cat] ?? "#333";
-          // backgroundSize: 400% wide (4 cols) x 300% tall (3 rows)
-          // backgroundPosition: col/3 * 100% and row/2 * 100%
-          const bgX = pos ? `${(pos.col / 3) * 100}%` : "0%";
-          const bgY = pos ? `${(pos.row / 2) * 100}%` : "0%";
-
-          return (
-            <motion.button
-              key={cat}
-              onClick={() => handleCategoryClick(cat as Category)}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{
-                delay: i * 0.04,
-                type: "spring",
-                stiffness: 260,
-                damping: 20,
-              }}
-              whileHover={{ scale: 1.04, y: -4 }}
-              whileTap={{ scale: 0.96 }}
-              className="relative overflow-hidden rounded-2xl aspect-square cursor-pointer text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 shadow-lg"
-              style={{ backgroundColor: bgColor }}
+        {cats.map((cat, i) => (
+          <motion.div
+            key={cat}
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              delay: Math.min(i * 0.04, 0.4),
+              type: "spring",
+              stiffness: 260,
+              damping: 22,
+            }}
+            whileHover={{ scale: 1.04, y: -4 }}
+            whileTap={{ scale: 0.97 }}
+          >
+            <Link
+              href={`/feed?category=${encodeURIComponent(cat)}`}
+              className="group relative block aspect-square overflow-hidden rounded-3xl border border-border/40 shadow-lg"
             >
-              {/* Mascot slice from grid */}
-              <div
-                className="absolute inset-0"
-                style={{
-                  backgroundImage: "url('/discover-grid.png')",
-                  backgroundSize: "400% 300%",
-                  backgroundPosition: `${bgX} ${bgY}`,
-                  backgroundRepeat: "no-repeat",
-                }}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={imgFor(cat)}
+                alt={cat}
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                draggable={false}
               />
-              {/* Label */}
-              <div className="absolute inset-0 flex flex-col justify-start p-3 pointer-events-none">
-                <span
-                  className="font-black text-white uppercase tracking-wider leading-tight drop-shadow-lg"
-                  style={{ fontSize: "clamp(0.6rem, 2vw, 0.85rem)" }}
-                >
-                  {cat}
-                </span>
-              </div>
-            </motion.button>
-          );
-        })}
+              {/* legibility gradient top + bottom */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/35" />
+              {/* title */}
+              <h2 className="absolute start-3 top-3 max-w-[80%] font-display text-lg uppercase leading-none tracking-wide text-white drop-shadow-lg sm:text-xl">
+                {cat}
+              </h2>
+              {/* explore */}
+              <span className="absolute bottom-3 end-3 inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold text-white opacity-0 backdrop-blur-md transition-opacity group-hover:opacity-100">
+                <ArrowRight className="h-3 w-3 rtl:rotate-180" />
+              </span>
+            </Link>
+          </motion.div>
+        ))}
       </div>
     </div>
   );
