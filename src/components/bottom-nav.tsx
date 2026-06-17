@@ -60,11 +60,11 @@ export function BottomNav({
                   }}
                   whileHover={{ scale: 1.12 }}
                   whileTap={{ scale: 0.82, rotate: -6 }}
-                  className="relative -mt-8 flex items-center justify-center"
+                  className="relative -mt-11 flex items-center justify-center"
                 >
                   {/* green glow behind the mascot */}
-                  <span className="absolute h-11 w-11 rounded-full bg-primary/50 blur-xl" />
-                  <Mascot className="relative h-[68px] w-[68px] drop-shadow-[0_0_10px_rgba(154,230,110,0.55)]" />
+                  <span className="absolute h-14 w-14 rounded-full bg-primary/50 blur-xl" />
+                  <Mascot className="relative h-[92px] w-[92px] drop-shadow-[0_0_12px_rgba(154,230,110,0.6)]" />
                 </motion.span>
               </Link>
             );
