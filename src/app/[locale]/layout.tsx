@@ -83,6 +83,9 @@ export default async function LocaleLayout({
             position={dir === "rtl" ? "bottom-left" : "bottom-right"}
             toastOptions={{ className: "font-sans" }}
           />
+          <span className="pointer-events-none fixed bottom-1 start-2 z-[60] text-[10px] text-muted-foreground/50">
+            build 9
+          </span>
         </NextIntlClientProvider>
       </body>
     </html>
