@@ -60,9 +60,9 @@ export function BottomNav({
                   }}
                   whileHover={{ scale: 1.12 }}
                   whileTap={{ scale: 0.82, rotate: -6 }}
-                  className="-mt-7 flex h-16 w-16 items-center justify-center rounded-full border-4 border-background bg-primary glow-primary"
+                  className="-mt-7 flex h-16 w-16 items-center justify-center rounded-full border-2 border-primary/70 bg-card glow-primary"
                 >
-                  <Mascot className="h-10 w-10" />
+                  <Mascot className="h-12 w-12" />
                 </motion.span>
               </Link>
             );
