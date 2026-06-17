@@ -205,6 +205,25 @@ export async function getProfileView(
   }
 }
 
+export async function getStolenFlowsByUser(
+  userId: string,
+): Promise<FlowCard[]> {
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("steals")
+      .select(`flow:flows(${FLOW_SELECT})`)
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+    return ((data ?? []) as unknown as { flow: Embedded }[])
+      .map((r) => r.flow)
+      .filter((f) => f && f.visibility === "public")
+      .map(shape);
+  } catch {
+    return [];
+  }
+}
+
 export async function getProfileCertifications(profileId: string) {
   try {
     const supabase = await createClient();

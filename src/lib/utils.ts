@@ -27,6 +27,17 @@ export function flowScore(opts: {
   return (engagement + 1) / Math.pow(ageHours + 2, gravity / 4);
 }
 
+/** Compact count formatting: 950 → "950", 5200 → "5.2K", 1_800_000 → "1.8M". */
+export function formatCount(n: number): string {
+  if (n < 1000) return String(n);
+  if (n < 1_000_000) {
+    const v = n / 1000;
+    return `${v.toFixed(v >= 100 ? 0 : 1).replace(/\.0$/, "")}K`;
+  }
+  const v = n / 1_000_000;
+  return `${v.toFixed(1).replace(/\.0$/, "")}M`;
+}
+
 export function initials(name?: string | null): string {
   if (!name) return "?";
   return name
