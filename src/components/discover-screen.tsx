@@ -4,34 +4,58 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { Search } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { CATEGORIES } from "@/lib/constants";
+import type { Category } from "@/lib/constants";
 
-const STYLE: Record<string, { grad: string; emoji: string; h: string }> = {
-  Yoga: { grad: "from-emerald-500 to-teal-700", emoji: "🧘", h: "h-72" },
-  "Vinyasa Yoga": { grad: "from-lime-500 to-emerald-700", emoji: "🌊", h: "h-60" },
-  "Power Yoga": { grad: "from-orange-500 to-rose-700", emoji: "⚡", h: "h-64" },
-  Pilates: { grad: "from-fuchsia-500 to-purple-700", emoji: "🤸", h: "h-72" },
-  "Pilates Reformer": { grad: "from-violet-500 to-indigo-700", emoji: "🎛️", h: "h-60" },
-  Barre: { grad: "from-pink-500 to-rose-700", emoji: "🩰", h: "h-64" },
-  "Functional Training": { grad: "from-amber-500 to-orange-700", emoji: "🔥", h: "h-72" },
-  HIIT: { grad: "from-red-500 to-rose-800", emoji: "💥", h: "h-60" },
-  Strength: { grad: "from-sky-500 to-blue-800", emoji: "💪", h: "h-72" },
-  Mobility: { grad: "from-cyan-500 to-teal-700", emoji: "🤍", h: "h-60" },
-  Stretching: { grad: "from-green-500 to-emerald-800", emoji: "🧠", h: "h-64" },
+// Grid: 4 cols x 3 rows in discover-grid.png
+// Row 0: Yoga(0,0), Vinyasa Yoga(1,0), Power Yoga(2,0), Pilates(3,0)
+// Row 1: Pilates Reformer(0,1), Barre(1,1), Functional Training(2,1), HIIT(3,1)
+// Row 2: Strength(0,2), Mobility(1,2), Stretching(2,2)
+const GRID_POS: Record<string, { col: number; row: number }> = {
+  "Yoga":                { col: 0, row: 0 },
+  "Vinyasa Yoga":        { col: 1, row: 0 },
+  "Power Yoga":          { col: 2, row: 0 },
+  "Pilates":             { col: 3, row: 0 },
+  "Pilates Reformer":    { col: 0, row: 1 },
+  "Barre":               { col: 1, row: 1 },
+  "Functional Training": { col: 2, row: 1 },
+  "HIIT":                { col: 3, row: 1 },
+  "Strength":            { col: 0, row: 2 },
+  "Mobility":            { col: 1, row: 2 },
+  "Stretching":          { col: 2, row: 2 },
+};
+
+const CARD_BG: Record<string, string> = {
+  "Yoga":                "#0f9e6e",
+  "Vinyasa Yoga":        "#2dbd3d",
+  "Power Yoga":          "#e85c1a",
+  "Pilates":             "#8a2be2",
+  "Pilates Reformer":    "#7b2fd4",
+  "Barre":               "#d42f7b",
+  "Functional Training": "#e07318",
+  "HIIT":                "#d42020",
+  "Strength":            "#2060c8",
+  "Mobility":            "#18a8a8",
+  "Stretching":          "#1aad4a",
 };
 
 export function DiscoverScreen() {
   const t = useTranslations("discover");
+  const router = useRouter();
   const [q, setQ] = useState("");
 
   const cats = CATEGORIES.filter((c) =>
-    c.toLowerCase().includes(q.trim().toLowerCase()),
+    c.toLowerCase().includes(q.trim().toLowerCase())
   );
+
+  function handleCategoryClick(cat: Category) {
+    router.push(`/?category=${encodeURIComponent(cat)}`);
+  }
 
   return (
     <div className="container py-8">
-      {/* header */}
+      {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -50,47 +74,53 @@ export function DiscoverScreen() {
         </div>
       </motion.header>
 
-      {/* masonry grid */}
-      <div className="columns-2 gap-3 md:columns-3 lg:columns-4 [&>*]:mb-3">
+      {/* Category Grid — mirrors discover-grid.png layout */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {cats.map((cat, i) => {
-          const s = STYLE[cat] ?? {
-            grad: "from-slate-500 to-slate-800",
-            emoji: "✨",
-            h: "h-64",
-          };
+          const pos = GRID_POS[cat];
+          const bgColor = CARD_BG[cat] ?? "#333";
+          // backgroundSize: 400% wide (4 cols) x 300% tall (3 rows)
+          // backgroundPosition: col/3 * 100% and row/2 * 100%
+          const bgX = pos ? `${(pos.col / 3) * 100}%` : "0%";
+          const bgY = pos ? `${(pos.row / 2) * 100}%` : "0%";
+
           return (
-            <motion.div
+            <motion.button
               key={cat}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(i * 0.04, 0.4) }}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="break-inside-avoid"
+              onClick={() => handleCategoryClick(cat as Category)}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{
+                delay: i * 0.04,
+                type: "spring",
+                stiffness: 260,
+                damping: 20,
+              }}
+              whileHover={{ scale: 1.04, y: -4 }}
+              whileTap={{ scale: 0.96 }}
+              className="relative overflow-hidden rounded-2xl aspect-square cursor-pointer text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 shadow-lg"
+              style={{ backgroundColor: bgColor }}
             >
-              <Link
-                href={`/feed?category=${encodeURIComponent(cat)}`}
-                className={`relative flex ${s.h} w-full flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br ${s.grad} p-4 shadow-lg`}
-              >
-                <div className="flex items-start justify-between">
-                  <h2 className="max-w-[70%] font-display text-2xl leading-none text-white drop-shadow">
-                    {cat}
-                  </h2>
-                  <span className="text-2xl">{s.emoji}</span>
-                </div>
-                {/* mascot */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/mascot.png"
-                  alt=""
-                  className="pointer-events-none absolute -bottom-3 end-1 h-28 w-28 object-contain opacity-90 drop-shadow-2xl"
-                  draggable={false}
-                />
-                <span className="relative z-10 text-xs font-semibold uppercase tracking-wider text-white/80">
-                  Explore →
+              {/* Mascot slice from grid */}
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: "url('/discover-grid.png')",
+                  backgroundSize: "400% 300%",
+                  backgroundPosition: `${bgX} ${bgY}`,
+                  backgroundRepeat: "no-repeat",
+                }}
+              />
+              {/* Label */}
+              <div className="absolute inset-0 flex flex-col justify-start p-3 pointer-events-none">
+                <span
+                  className="font-black text-white uppercase tracking-wider leading-tight drop-shadow-lg"
+                  style={{ fontSize: "clamp(0.6rem, 2vw, 0.85rem)" }}
+                >
+                  {cat}
                 </span>
-              </Link>
-            </motion.div>
+              </div>
+            </motion.button>
           );
         })}
       </div>
