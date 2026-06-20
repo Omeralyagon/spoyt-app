@@ -169,8 +169,9 @@ async function generateWithGemini(req: FlowRequest): Promise<GeneratedFlow> {
   const models = [
     process.env.GEMINI_MODEL,
     "gemini-2.0-flash",
+    "gemini-2.0-flash-lite",
     "gemini-1.5-flash",
-    "gemini-2.5-flash",
+    "gemini-1.5-flash-8b",
   ].filter(Boolean) as string[];
 
   let lastErr = "";
@@ -196,8 +197,9 @@ async function generateWithGemini(req: FlowRequest): Promise<GeneratedFlow> {
     }
     const body = await res.text();
     lastErr = `Gemini ${res.status}: ${body.slice(0, 180)}`;
-    // 404 = model not found for this key → try the next model; otherwise stop.
-    if (res.status !== 404) throw new Error(lastErr);
+    // model-not-found or quota → try the next model (lite models have higher
+    // free limits); any other error stops immediately.
+    if (res.status !== 404 && res.status !== 429) throw new Error(lastErr);
   }
   throw new Error(lastErr || "Gemini request failed");
 }
