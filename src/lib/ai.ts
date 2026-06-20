@@ -165,32 +165,55 @@ async function generateWithGemini(req: FlowRequest): Promise<GeneratedFlow> {
   if (!process.env.GEMINI_API_KEY) {
     throw new Error("AI is not configured (missing GEMINI_API_KEY).");
   }
-  const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        system_instruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\n${SHAPE_HINT}` }] },
-        contents: [{ role: "user", parts: [{ text: buildUserPrompt(req) }] }],
-        generationConfig: { responseMimeType: "application/json", temperature: 0.7 },
-      }),
-    },
-  );
-  if (!res.ok) {
+  // Try a few known-good models so a single model rename never breaks us.
+  const models = [
+    process.env.GEMINI_MODEL,
+    "gemini-2.0-flash",
+    "gemini-1.5-flash",
+    "gemini-2.5-flash",
+  ].filter(Boolean) as string[];
+
+  let lastErr = "";
+  for (const model of models) {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\n${SHAPE_HINT}` }] },
+          contents: [{ role: "user", parts: [{ text: buildUserPrompt(req) }] }],
+          generationConfig: { responseMimeType: "application/json", temperature: 0.7 },
+        }),
+      },
+    );
+    if (res.ok) {
+      const data = await res.json();
+      const text: string | undefined =
+        data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) throw new Error("Gemini returned no content");
+      return parseFlowJson(text);
+    }
     const body = await res.text();
-    throw new Error(`Gemini error ${res.status}: ${body.slice(0, 200)}`);
+    lastErr = `Gemini ${res.status}: ${body.slice(0, 180)}`;
+    // 404 = model not found for this key → try the next model; otherwise stop.
+    if (res.status !== 404) throw new Error(lastErr);
   }
-  const data = await res.json();
-  const text: string | undefined =
-    data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!text) throw new Error("Gemini returned no content");
-  return parseFlowJson(text);
+  throw new Error(lastErr || "Gemini request failed");
+}
+
+/** Resolve the active provider: explicit env, else auto-detect by which key exists. */
+export function activeProvider(): "anthropic" | "openai" | "gemini" {
+  const explicit = process.env.AI_PROVIDER?.toLowerCase();
+  if (explicit === "gemini" || explicit === "openai" || explicit === "anthropic")
+    return explicit;
+  if (process.env.GEMINI_API_KEY) return "gemini";
+  if (process.env.OPENAI_API_KEY) return "openai";
+  return "anthropic";
 }
 
 export async function generateFlow(req: FlowRequest): Promise<GeneratedFlow> {
-  const provider = (process.env.AI_PROVIDER || "anthropic").toLowerCase();
+  const provider = activeProvider();
   const flow =
     provider === "openai"
       ? await generateWithOpenAI(req)

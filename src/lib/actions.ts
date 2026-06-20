@@ -6,6 +6,7 @@ import {
   generateFlow,
   buildPromptString,
   friendlyAiError,
+  activeProvider,
   type FlowRequest,
 } from "@/lib/ai";
 import { log } from "@/lib/logger";
@@ -210,7 +211,7 @@ export async function generateFlowAction(req: FlowRequest) {
   } catch (e) {
     // Log the raw cause server-side; return a safe message to the client.
     const friendly = friendlyAiError(e);
-    const provider = (process.env.AI_PROVIDER || "anthropic").toLowerCase();
+    const provider = activeProvider();
     log("error", {
       action: "ai.generate",
       status: "error",

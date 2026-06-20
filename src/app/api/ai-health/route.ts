@@ -1,0 +1,41 @@
+import { NextResponse } from "next/server";
+import { generateFlow, activeProvider } from "@/lib/ai";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+/**
+ * GET /api/ai-health — self-diagnostic for AI generation.
+ * Open in a browser to see which provider is active, which keys are present,
+ * and the exact provider error if generation fails. No secrets are returned.
+ */
+export async function GET() {
+  const env = {
+    AI_PROVIDER: process.env.AI_PROVIDER ?? null,
+    hasGEMINI_API_KEY: !!process.env.GEMINI_API_KEY,
+    hasANTHROPIC_API_KEY: !!process.env.ANTHROPIC_API_KEY,
+    hasOPENAI_API_KEY: !!process.env.OPENAI_API_KEY,
+  };
+  const provider = activeProvider();
+
+  try {
+    const flow = await generateFlow({
+      classType: "Yoga",
+      durationMinutes: 20,
+      level: "beginner",
+      goals: "health check",
+      locale: "en",
+    });
+    return NextResponse.json({
+      ok: true,
+      provider,
+      env,
+      sample: { title: flow.title, steps: flow.steps.length },
+    });
+  } catch (e) {
+    return NextResponse.json(
+      { ok: false, provider, env, error: (e as Error).message },
+      { status: 200 },
+    );
+  }
+}
