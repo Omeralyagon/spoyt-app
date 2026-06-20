@@ -2,10 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { Heart, Bookmark, Share2 } from "lucide-react";
+import { Heart, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
+import { Mascot } from "@/components/mascot";
+import { triggerStealBurst } from "@/components/steal-overlay";
 import { toggleLike, toggleSteal } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 
@@ -34,6 +36,7 @@ export function FlowActions({
     const setter = kind === "like" ? setLike : setSteal;
     const cur = kind === "like" ? like : steal;
     setter({ on: !cur.on, n: cur.n + (cur.on ? -1 : 1) });
+    if (kind === "steal" && !cur.on) triggerStealBurst();
     start(async () => {
       const res = await action(flowId);
       if (!res.ok) {
@@ -64,7 +67,7 @@ export function FlowActions({
         variant={steal.on ? "default" : "outline"}
         onClick={() => engage("steal")}
       >
-        <Bookmark className={cn("h-4 w-4", steal.on && "fill-current")} />
+        <Mascot className="h-5 w-5" />
         {steal.on ? t("stolen") : t("steal")} · {steal.n}
       </Button>
       <Button variant="ghost" size="icon" onClick={share} title={t("share")}>

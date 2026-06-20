@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import {
   Heart,
-  Zap,
   Share2,
   UserPlus,
   UserCheck,
@@ -16,6 +15,8 @@ import {
 import { toast } from "sonner";
 import { Link, useRouter } from "@/i18n/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Mascot } from "@/components/mascot";
+import { triggerStealBurst } from "@/components/steal-overlay";
 import { toggleLike, toggleSteal, toggleFollow } from "@/lib/actions";
 import { cn, initials } from "@/lib/utils";
 import type { FlowCard } from "@/lib/queries";
@@ -74,7 +75,10 @@ function FeedScreen({ item }: { item: FeedItem }) {
   function onSteal() {
     const cur = steal;
     setSteal({ on: !cur.on, n: cur.n + (cur.on ? -1 : 1) });
-    if (!cur.on) setBurst((b) => b + 1);
+    if (!cur.on) {
+      setBurst((b) => b + 1);
+      triggerStealBurst();
+    }
     start(async () => {
       const r = await toggleSteal(flow.id);
       if (!r.ok) {
@@ -141,7 +145,7 @@ function FeedScreen({ item }: { item: FeedItem }) {
               active={steal.on}
               primary
             >
-              <Zap className={cn("h-7 w-7", steal.on && "fill-current")} />
+              <Mascot className="h-7 w-7" />
             </Rail>
             <AnimatePresence>
               {burst > 0 && (

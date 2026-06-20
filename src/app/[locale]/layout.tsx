@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 import { routing, localeDirection, type Locale } from "@/i18n/routing";
 import { SiteHeader } from "@/components/site-header";
 import { BottomNav } from "@/components/bottom-nav";
+import { StealOverlay } from "@/components/steal-overlay";
 import { getCurrentUser } from "@/lib/auth";
 import "../globals.css";
 
@@ -78,6 +79,7 @@ export default async function LocaleLayout({
             {children}
           </main>
           <BottomNav signedIn={!!user} profileId={user?.profile?.id ?? null} />
+          <StealOverlay />
           <Toaster
             theme="dark"
             position={dir === "rtl" ? "bottom-left" : "bottom-right"}

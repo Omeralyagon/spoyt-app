@@ -3,10 +3,12 @@
 import { useState, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { Heart, Zap, Clock, BadgeCheck } from "lucide-react";
+import { Heart, Clock, BadgeCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Link, useRouter } from "@/i18n/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Mascot } from "@/components/mascot";
+import { triggerStealBurst } from "@/components/steal-overlay";
 import { toggleLike, toggleSteal } from "@/lib/actions";
 import { cn, initials } from "@/lib/utils";
 import type { FlowCard as FlowCardData } from "@/lib/queries";
@@ -40,7 +42,10 @@ export function FlowCard({
     const setter = kind === "like" ? setLikeState : setStealState;
     const cur = kind === "like" ? likeState : stealState;
     setter({ on: !cur.on, n: cur.n + (cur.on ? -1 : 1) });
-    if (kind === "steal" && !cur.on) setStealBurst((b) => b + 1);
+    if (kind === "steal" && !cur.on) {
+      setStealBurst((b) => b + 1);
+      triggerStealBurst();
+    }
     start(async () => {
       const res = await action(flow.id);
       if (!res.ok) {
@@ -108,7 +113,7 @@ export function FlowCard({
               variant="primary"
               disabled={isPending}
             >
-              <Zap className={cn("h-6 w-6", stealState.on && "fill-current")} />
+              <Mascot className="h-6 w-6" />
             </ActionButton>
             <AnimatePresence>
               {stealBurst > 0 && (
