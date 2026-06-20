@@ -1,10 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Home, Compass, Library, User } from "lucide-react";
+import { Home, Compass, Library, User, Sparkles, PenLine } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { Mascot } from "@/components/mascot";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 export function BottomNav({
@@ -16,6 +23,7 @@ export function BottomNav({
 }) {
   const t = useTranslations("nav");
   const pathname = usePathname();
+  const [createOpen, setCreateOpen] = useState(false);
 
   // Hide app navigation on public/auth screens.
   const PUBLIC = ["/login", "/register", "/forgot-password", "/reset-password"];
@@ -51,11 +59,12 @@ export function BottomNav({
           const active = isActive(item.href);
           if (item.center) {
             return (
-              <Link
-                key={item.href}
-                href={item.href}
+              <button
+                key="create"
+                type="button"
                 aria-label={item.label}
                 className="mx-1"
+                onClick={() => setCreateOpen(true)}
               >
                 <motion.span
                   animate={{ y: [0, -3, 0] }}
@@ -72,7 +81,7 @@ export function BottomNav({
                   <span className="absolute h-14 w-14 rounded-full bg-primary/50 blur-xl" />
                   <Mascot className="relative h-[92px] w-[92px] drop-shadow-[0_0_12px_rgba(154,230,110,0.6)]" />
                 </motion.span>
-              </Link>
+              </button>
             );
           }
           return (
@@ -107,6 +116,49 @@ export function BottomNav({
           );
         })}
       </div>
+
+      {/* Create choice: AI vs manual */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent>
+          <DialogTitle>{t("createChoice")}</DialogTitle>
+          <div className="mt-5 grid gap-3">
+            <DialogClose asChild>
+              <Link
+                href="/generate"
+                className="flex items-center gap-3 rounded-2xl border border-primary/40 bg-primary/5 p-4 transition-colors hover:bg-primary/10"
+              >
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/15 text-primary">
+                  <Sparkles className="h-5 w-5" />
+                </span>
+                <span>
+                  <span className="block font-semibold">{t("createWithAI")}</span>
+                  <span className="block text-sm text-muted-foreground">
+                    {t("createWithAIDesc")}
+                  </span>
+                </span>
+              </Link>
+            </DialogClose>
+            <DialogClose asChild>
+              <Link
+                href="/create"
+                className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 transition-colors hover:bg-accent"
+              >
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-muted text-foreground">
+                  <PenLine className="h-5 w-5" />
+                </span>
+                <span>
+                  <span className="block font-semibold">
+                    {t("writeYourself")}
+                  </span>
+                  <span className="block text-sm text-muted-foreground">
+                    {t("writeYourselfDesc")}
+                  </span>
+                </span>
+              </Link>
+            </DialogClose>
+          </div>
+        </DialogContent>
+      </Dialog>
     </nav>
   );
 }

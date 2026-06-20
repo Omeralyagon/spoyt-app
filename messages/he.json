@@ -14,7 +14,12 @@
     "login": "התחברות",
     "logout": "התנתקות",
     "profile": "פרופיל",
-    "signup": "הצטרפות"
+    "signup": "הצטרפות",
+    "createChoice": "איך תרצה ליצור?",
+    "createWithAI": "יצירה עם AI",
+    "createWithAIDesc": "תארו את השיעור — ה-AI בונה את ה-flow.",
+    "writeYourself": "כתיבה עצמאית",
+    "writeYourselfDesc": "בנו את ה-flow שלב אחר שלב."
   },
   "common": {
     "loading": "טוען",
@@ -73,6 +78,9 @@
     "steal": "גנוב",
     "stolen": "נגנב",
     "share": "שיתוף",
+    "delete": "מחיקת flow",
+    "deleteConfirm": "למחוק את ה-flow לצמיתות? לא ניתן לבטל.",
+    "deleted": "ה-flow נמחק",
     "linkCopied": "הקישור הועתק",
     "structure": "מבנה השיעור",
     "duration": "משך",

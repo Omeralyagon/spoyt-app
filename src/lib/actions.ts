@@ -254,6 +254,26 @@ export async function saveGeneratedFlow(
   }
 }
 
+// ---------------------------------------------------------------- delete flow
+export async function deleteFlow(flowId: string) {
+  const { supabase, user } = await requireUser();
+  if (!user) return { ok: false as const, error: "auth" };
+  // RLS ensures only the owner (or admin) can delete; steps cascade via FK.
+  const { error } = await supabase.from("flows").delete().eq("id", flowId);
+  if (error) {
+    log("error", {
+      action: "flow.delete",
+      status: "error",
+      userId: user.id,
+      errorMessage: error.message,
+    });
+    return { ok: false as const, error: error.message };
+  }
+  log("info", { action: "flow.delete", status: "ok", userId: user.id });
+  revalidatePath("/", "layout");
+  return { ok: true as const };
+}
+
 // ---------------------------------------------------------------- admin
 export async function reviewCertification(
   certId: string,

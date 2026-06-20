@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { FlowActions } from "@/components/flow-actions";
 import { FollowButton } from "@/components/follow-button";
+import { DeleteFlowButton } from "@/components/delete-flow-button";
 
 export default async function FlowPage({
   params,
@@ -107,13 +108,16 @@ export default async function FlowPage({
             )}
           </div>
         )}
-        <FlowActions
-          flowId={flow.id}
-          likeCount={flow.like_count}
-          stealCount={flow.steal_count}
-          liked={flow.likedByMe}
-          stolen={flow.stolenByMe}
-        />
+        <div className="flex items-center gap-1">
+          <FlowActions
+            flowId={flow.id}
+            likeCount={flow.like_count}
+            stealCount={flow.steal_count}
+            liked={flow.likedByMe}
+            stolen={flow.stolenByMe}
+          />
+          {isOwn && <DeleteFlowButton flowId={flow.id} />}
+        </div>
       </div>
 
       {flow.description && (

@@ -14,7 +14,12 @@
     "login": "Log in",
     "logout": "Log out",
     "profile": "Profile",
-    "signup": "Get started"
+    "signup": "Get started",
+    "createChoice": "How do you want to create?",
+    "createWithAI": "Create with AI",
+    "createWithAIDesc": "Describe your class — AI builds the flow.",
+    "writeYourself": "Write it yourself",
+    "writeYourselfDesc": "Build your flow step by step."
   },
   "common": {
     "loading": "Loading",
@@ -73,6 +78,9 @@
     "steal": "Steal",
     "stolen": "Stolen",
     "share": "Share",
+    "delete": "Delete flow",
+    "deleteConfirm": "Delete this flow permanently? This cannot be undone.",
+    "deleted": "Flow deleted",
     "linkCopied": "Link copied",
     "structure": "Class structure",
     "duration": "Duration",
