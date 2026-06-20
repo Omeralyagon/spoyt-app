@@ -211,3 +211,35 @@ The visual language is documented as a design philosophy,
 museum-grade plate ([`design/kinetic-stillness.png`](design/kinetic-stillness.png)).
 See [`docs/AI_DEVELOPMENT_PROCESS.md`](docs/AI_DEVELOPMENT_PROCESS.md) for how AI
 tools were used throughout the build (the "Vibe Coding" log).
+
+## 12. Environment variables
+
+| Variable | Where | Purpose |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | client+server | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | client+server | Supabase anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | server only | seeding / admin tasks |
+| `AI_PROVIDER` | server only | `gemini` (free) · `anthropic` · `openai` |
+| `GEMINI_API_KEY` | server only | Google Gemini (free tier) |
+| `ANTHROPIC_API_KEY` | server only | Claude (paid) |
+| `OPENAI_API_KEY` | server only | OpenAI (paid) |
+| `NEXT_PUBLIC_SITE_URL` | client | canonical site URL |
+
+## 13. Troubleshooting
+
+- **AI generation fails / "temporarily unavailable":** set `AI_PROVIDER=gemini`
+  and `GEMINI_API_KEY` (free key from aistudio.google.com/apikey) in Vercel →
+  **Redeploy**. Paid providers (`anthropic`/`openai`) require account credits.
+- **Uploads or flow publishing fail:** run
+  [`supabase/migrations/0003_idempotent_setup.sql`](supabase/migrations/0003_idempotent_setup.sql)
+  once in the Supabase SQL editor — it (re)creates the storage buckets and all
+  RLS policies. Safe to run repeatedly.
+- **Profile shows blank / 404:** fixed automatically — the profile row is
+  created on first authenticated request.
+- **Login screen shows app navigation:** fixed — nav is hidden on public routes.
+- **Changes not visible on the live site:** confirm Vercel's Production Branch is
+  `main` and redeploy after changing environment variables.
+
+See [`CHANGELOG.md`](CHANGELOG.md) and
+[`docs/IMPLEMENTATION_REPORT.md`](docs/IMPLEMENTATION_REPORT.md) for the full
+production-hardening report.
