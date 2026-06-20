@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { FlowActions } from "@/components/flow-actions";
 import { FollowButton } from "@/components/follow-button";
 import { DeleteFlowButton } from "@/components/delete-flow-button";
+import { ReadAloud } from "@/components/read-aloud";
 
 export default async function FlowPage({
   params,
@@ -29,6 +30,16 @@ export default async function FlowPage({
   const vid = youtubeId(flow.youtube_url);
   const music = musicEmbed(flow.music_url);
   const isOwn = flow.creator?.id && flow.creator.id === user?.profile?.id;
+
+  const readText = [
+    flow.title,
+    flow.description ?? "",
+    ...flow.steps.map(
+      (s, idx) => `${idx + 1}. ${s.title}. ${s.content ?? ""}`,
+    ),
+  ]
+    .filter(Boolean)
+    .join(". ");
 
   return (
     <article className="container max-w-4xl py-10">
@@ -117,6 +128,7 @@ export default async function FlowPage({
           </div>
         )}
         <div className="flex items-center gap-1">
+          <ReadAloud text={readText} lang={locale} />
           <FlowActions
             flowId={flow.id}
             likeCount={flow.like_count}

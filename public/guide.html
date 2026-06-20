@@ -116,6 +116,7 @@
           <b>STEAL MY FLOW</b>
         </div>
         <div style="display:flex; gap:10px; align-items:center;">
+          <button class="lang" id="speak" title="Read aloud" aria-label="Read aloud">🔊</button>
           <button class="lang" id="lang">עברית</button>
           <button class="ghost" id="skip">Skip</button>
         </div>
@@ -234,7 +235,26 @@
         $("next").textContent = last ? t.start : t.next;
         $("next").className = "btn" + (last ? " glow" : "");
       }
+      let speaking = false;
+      function stopSpeak() {
+        if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+        speaking = false;
+      }
+      function speak() {
+        if (!("speechSynthesis" in window)) return;
+        if (speaking) { stopSpeak(); return; }
+        const s = T[lang].steps[i];
+        const u = new SpeechSynthesisUtterance(s[0] + ". " + s[1]);
+        u.lang = lang === "he" ? "he-IL" : "en-US";
+        u.rate = 0.98;
+        u.onend = () => (speaking = false);
+        u.onerror = () => (speaking = false);
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(u);
+        speaking = true;
+      }
       function go(d) {
+        stopSpeak();
         const n = T[lang].steps.length;
         if (i === n - 1 && d > 0) { window.location.href = APP_URL; return; }
         i = Math.min(n - 1, Math.max(0, i + d));
@@ -243,7 +263,8 @@
       $("next").onclick = () => go(1);
       $("back").onclick = () => go(-1);
       $("skip").onclick = () => (window.location.href = APP_URL);
-      $("lang").onclick = () => { lang = lang === "en" ? "he" : "en"; render(); };
+      $("speak").onclick = speak;
+      $("lang").onclick = () => { stopSpeak(); lang = lang === "en" ? "he" : "en"; render(); };
       render();
     </script>
   </body>
