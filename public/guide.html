@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Steal My Flow — Interactive Guide</title>
+    <link rel="icon" href="/mascot.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;600;700;800&family=Heebo:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0f1115;
+        --card: #181b22;
+        --text: #f8f8f8;
+        --muted: #9aa3b2;
+        --primary: #9ae66e;
+        --secondary: #2ec4b6;
+        --border: #2a2f3a;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; }
+      body {
+        background:
+          radial-gradient(60rem 40rem at 80% -10%, rgba(154, 230, 110, 0.08), transparent 60%),
+          radial-gradient(50rem 40rem at 0% 0%, rgba(46, 196, 182, 0.07), transparent 55%),
+          var(--bg);
+        color: var(--text);
+        font-family: "Manrope", "Heebo", system-ui, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .wrap { width: 100%; max-width: 560px; }
+      .topbar {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 14px;
+      }
+      .brand { display: flex; align-items: center; gap: 10px; }
+      .brand img { width: 34px; height: 34px; object-fit: contain; }
+      .brand b {
+        font-family: "Bebas Neue", "Heebo", sans-serif;
+        font-size: 22px; letter-spacing: 1px;
+      }
+      .ghost {
+        background: none; border: 0; color: var(--muted);
+        cursor: pointer; font: inherit; font-size: 14px;
+      }
+      .ghost:hover { color: var(--text); }
+      .progress { display: flex; gap: 6px; margin-bottom: 20px; }
+      .progress span {
+        height: 6px; flex: 1; border-radius: 99px; background: var(--card);
+        transition: background 0.3s;
+      }
+      .progress span.on { background: var(--primary); }
+      .stage {
+        border: 1px solid var(--border); background: var(--card);
+        border-radius: 28px; overflow: hidden; min-height: 420px;
+      }
+      .visual {
+        height: 220px; display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(135deg, rgba(154,230,110,0.18), rgba(46,196,182,0.14));
+        position: relative; overflow: hidden;
+      }
+      .visual img.mascot { width: 130px; height: 130px; object-fit: contain;
+        filter: drop-shadow(0 0 30px rgba(154,230,110,0.5));
+        animation: float 2.4s ease-in-out infinite; }
+      @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+      .mock {
+        position: relative; width: 240px; height: 160px; border-radius: 20px;
+        background: linear-gradient(135deg, #e85c1a, #b4263f); overflow: hidden;
+      }
+      .mock .ov { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.7), transparent); }
+      .mock .ttl { position:absolute; bottom:12px; left:14px; font-family:"Bebas Neue",sans-serif; font-size:20px; }
+      .mock .steal {
+        position:absolute; bottom:38px; right:14px; width:46px; height:46px; border-radius:99px;
+        background: var(--primary); display:flex; align-items:center; justify-content:center;
+        box-shadow: 0 0 0 1px rgba(154,230,110,.25), 0 8px 30px -8px rgba(154,230,110,.45);
+        animation: pulse 1.4s ease-in-out infinite;
+      }
+      .mock .steal img { width:28px; height:28px; }
+      @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.18)} }
+      .tiles { display:flex; gap:10px; }
+      .tile { width:78px; height:120px; border-radius:16px; display:flex; align-items:flex-end; padding:8px; }
+      .pills { display:flex; gap:22px; }
+      .pill { display:flex; flex-direction:column; align-items:center; gap:6px; color:#fff; }
+      .pill .c { width:46px; height:46px; border-radius:99px; background:rgba(255,255,255,.12);
+        display:flex; align-items:center; justify-content:center; font-size:20px; }
+      .chip { display:inline-flex; align-items:center; gap:6px; border-radius:99px; padding:5px 12px; font-size:12px; font-weight:600; }
+      .chip.ai { background: rgba(154,230,110,.16); color: var(--primary); }
+      .chip.man { background: #232833; color: var(--text); }
+      .body { padding: 26px; }
+      .body h2 { font-family: "Bebas Neue", "Heebo", sans-serif; font-size: 34px; margin: 0; letter-spacing: .5px; }
+      .body p { color: var(--muted); margin: 12px 0 0; line-height: 1.6; font-size: 15px; }
+      .controls { display: flex; align-items: center; justify-content: space-between; margin-top: 22px; }
+      .btn {
+        font: inherit; font-weight: 700; cursor: pointer; border: 0; border-radius: 99px;
+        padding: 12px 26px; background: var(--primary); color: #0f1115;
+      }
+      .btn:disabled { opacity: .4; cursor: default; }
+      .btn.glow { box-shadow: 0 0 0 1px rgba(154,230,110,.25), 0 10px 30px -8px rgba(154,230,110,.55); }
+      .btn.sec { background: transparent; color: var(--muted); }
+      .lang { border:1px solid var(--border); background:var(--card); color:var(--text); border-radius:99px; padding:6px 12px; cursor:pointer; font:inherit; font-size:13px; }
+      [dir="rtl"] body, [dir="rtl"] .wrap { font-family: "Heebo", "Manrope", sans-serif; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand">
+          <img src="/mascot.png" alt="" />
+          <b>STEAL MY FLOW</b>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button class="lang" id="lang">עברית</button>
+          <button class="ghost" id="skip">Skip</button>
+        </div>
+      </div>
+
+      <div class="progress" id="progress"></div>
+
+      <div class="stage">
+        <div class="visual" id="visual"></div>
+        <div class="body">
+          <h2 id="title"></h2>
+          <p id="text"></p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn sec" id="back">Back</button>
+        <button class="btn" id="next">Next</button>
+      </div>
+    </div>
+
+    <script>
+      const APP_URL = "/"; // live app
+      const T = {
+        en: {
+          dir: "ltr", skip: "Skip", back: "Back", next: "Next", start: "Start exploring", lang: "עברית",
+          steps: [
+            ["Welcome to Steal My Flow", "A living library of class flows for fitness & wellness instructors. Discover, save and create professional lesson plans."],
+            ["Discover flows", "Browse the immersive home feed — one flow per screen. Open Discover to explore by category like Yoga, Pilates or HIIT."],
+            ["Steal a flow ⚡", "Tap the thief icon to “Steal” any flow straight into your personal library, ready to adapt and reuse. It's our signature move."],
+            ["Like & follow", "Like flows you love and follow the instructors that inspire you — build your own feed of great content."],
+            ["Create your own", "Tap the green thief in the center to create — choose AI generation or write your flow step by step, with cover image, video and music."],
+            ["AI Studio", "Describe a class — type, duration, level and goal — and get a structured warmup → main → cooldown flow you can save instantly."],
+            ["Your profile", "Your personal brand hub: stats, verified badge, achievements, influence score and all your flows. Upload a photo and certifications."],
+          ],
+        },
+        he: {
+          dir: "rtl", skip: "דלג", back: "חזרה", next: "הבא", start: "מתחילים לחקור", lang: "English",
+          steps: [
+            ["ברוכים הבאים ל-Steal My Flow", "ספרייה חיה של תוכניות שיעור למדריכי כושר ו-וולנס. גלו, שמרו וצרו תוכניות שיעור מקצועיות."],
+            ["גלו תוכניות", "גללו בפיד הבית האימרסיבי — flow אחד לכל מסך. בעמוד Discover אפשר לחקור לפי קטגוריה: יוגה, פילאטיס, HIIT ועוד."],
+            ["גנבו flow ⚡", "לחצו על אייקון הגנב כדי “לגנוב” כל flow ישירות לספרייה האישית שלכם — מוכן להתאמה ושימוש חוזר. זו הפעולה החתימה שלנו."],
+            ["אהבו ועקבו", "סמנו לייק לתוכניות שאהבתם ועקבו אחרי מדריכים שמעוררים בכם השראה — בנו לעצמכם פיד של תוכן מעולה."],
+            ["צרו משלכם", "לחצו על הגנב הירוק במרכז כדי ליצור — בחרו יצירה ב-AI או כתיבה עצמאית, עם תמונת/וידאו קאבר ומוזיקה."],
+            ["סטודיו AI", "תארו שיעור — סוג, משך, רמה ומטרה — וקבלו flow מובנה (חימום → עיקרי → שחרור) שניתן לשמור מיד."],
+            ["הפרופיל שלך", "מרכז המותג האישי שלך: סטטיסטיקות, תג מאומת, הישגים, ציון השפעה וכל התוכניות שלך. אפשר להעלות תמונה ותעודות."],
+          ],
+        },
+      };
+
+      const visuals = [
+        () => `<img class="mascot" src="/mascot.png" alt="">`,
+        () => `<div class="tiles">
+            <div class="tile" style="background:linear-gradient(135deg,#10b981,#0f766e)">🧘</div>
+            <div class="tile" style="background:linear-gradient(135deg,#d946ef,#7e22ce)">🤸</div>
+            <div class="tile" style="background:linear-gradient(135deg,#ef4444,#9f1239)">🔥</div>
+          </div>`,
+        () => `<div class="mock"><div class="ov"></div><div class="ttl">Power Flow</div>
+            <div class="steal"><img src="/mascot.png" alt=""></div></div>`,
+        () => `<div class="pills">
+            <div class="pill"><div class="c">❤️</div><span>Like</span></div>
+            <div class="pill"><div class="c">➕</div><span>Follow</span></div>
+            <div class="pill"><div class="c">🔗</div><span>Share</span></div>
+          </div>`,
+        () => `<div style="display:flex;flex-direction:column;align-items:center;gap:14px">
+            <span style="width:84px;height:84px;border-radius:99px;border:2px solid rgba(154,230,110,.7);background:var(--card);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1px rgba(154,230,110,.25),0 10px 30px -8px rgba(154,230,110,.55)"><img src="/mascot.png" style="width:52px;height:52px"></span>
+            <div style="display:flex;gap:8px"><span class="chip ai">✨ AI</span><span class="chip man">✍️ Manual</span></div>
+          </div>`,
+        () => `<div style="width:260px;display:flex;flex-direction:column;gap:8px">
+            <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:8px;font-size:12px;color:var(--muted)">Vinyasa Yoga · 45 min · beginner</div>
+            <div class="chip ai" style="justify-content:center;padding:9px">✨ Generate flow</div>
+            <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:8px;font-size:12px">⏱ Warmup</div>
+            <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:8px;font-size:12px">⏱ Main</div>
+          </div>`,
+        () => `<div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+            <span style="width:64px;height:64px;border-radius:99px;background:rgba(154,230,110,.15);display:flex;align-items:center;justify-content:center;font-size:30px">🦹</span>
+            <span class="chip ai">✔ Verified Pro</span>
+            <div style="display:flex;gap:8px;margin-top:4px">
+              <span style="width:46px;height:46px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center">🏆</span>
+              <span style="width:46px;height:46px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center">⚡</span>
+              <span style="width:46px;height:46px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center">🔥</span>
+            </div>
+          </div>`,
+      ];
+
+      let lang = "en";
+      let i = 0;
+      const $ = (id) => document.getElementById(id);
+
+      function render() {
+        const t = T[lang];
+        document.documentElement.lang = lang;
+        document.documentElement.dir = t.dir;
+        const n = t.steps.length;
+        $("progress").innerHTML = Array.from({ length: n }, (_, k) =>
+          `<span class="${k <= i ? "on" : ""}"></span>`).join("");
+        $("visual").innerHTML = visuals[i]();
+        $("title").textContent = t.steps[i][0];
+        $("text").textContent = t.steps[i][1];
+        $("skip").textContent = t.skip;
+        $("back").textContent = t.back;
+        $("back").disabled = i === 0;
+        $("lang").textContent = t.lang;
+        const last = i === n - 1;
+        $("next").textContent = last ? t.start : t.next;
+        $("next").className = "btn" + (last ? " glow" : "");
+      }
+      function go(d) {
+        const n = T[lang].steps.length;
+        if (i === n - 1 && d > 0) { window.location.href = APP_URL; return; }
+        i = Math.min(n - 1, Math.max(0, i + d));
+        render();
+      }
+      $("next").onclick = () => go(1);
+      $("back").onclick = () => go(-1);
+      $("skip").onclick = () => (window.location.href = APP_URL);
+      $("lang").onclick = () => { lang = lang === "en" ? "he" : "en"; render(); };
+      render();
+    </script>
+  </body>
+</html>

@@ -42,6 +42,27 @@
     "tryAgain": "Try again",
     "noResults": "Nothing here yet"
   },
+  "guide": {
+    "title": "How to use Steal My Flow",
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "start": "Start exploring",
+    "s1Title": "Welcome to Steal My Flow",
+    "s1Body": "A living library of class flows for fitness & wellness instructors. Discover, save and create professional lesson plans.",
+    "s2Title": "Discover flows",
+    "s2Body": "Browse the immersive home feed — one flow per screen. Open Discover to explore by category like Yoga, Pilates or HIIT.",
+    "s3Title": "Steal a flow ⚡",
+    "s3Body": "Tap the thief icon to “Steal” any flow straight into your personal library, ready to adapt and reuse. It's our signature move.",
+    "s4Title": "Like & follow",
+    "s4Body": "Like flows you love and follow the instructors that inspire you — build your own feed of great content.",
+    "s5Title": "Create your own",
+    "s5Body": "Tap the green thief in the center to create — choose AI generation or write your flow step by step, with cover image, video and music.",
+    "s6Title": "AI Studio",
+    "s6Body": "Describe a class — type, duration, level and goal — and get a structured warmup → main → cooldown flow you can save instantly.",
+    "s7Title": "Your profile",
+    "s7Body": "Your personal brand hub: stats, verified badge, achievements, influence score and all your flows. Upload a photo and certifications."
+  },
   "home": {
     "heroKicker": "For instructors who move",
     "heroTitle": "A living library of class flows.",
