@@ -2,7 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { generateFlow, buildPromptString, type FlowRequest } from "@/lib/ai";
+import {
+  generateFlow,
+  buildPromptString,
+  friendlyAiError,
+  type FlowRequest,
+} from "@/lib/ai";
+import { log } from "@/lib/logger";
 import type { GeneratedFlow } from "@/types/database";
 
 async function requireUser() {
@@ -167,9 +173,16 @@ export async function createFlow(input: CreateFlowInput) {
 
   try {
     const id = await insertFlowWithSteps(supabase, profileId, input);
+    log("info", { action: "flow.create", status: "ok", userId: user.id });
     revalidatePath("/", "layout");
     return { ok: true as const, id };
   } catch (e) {
+    log("error", {
+      action: "flow.create",
+      status: "error",
+      userId: user.id,
+      errorMessage: (e as Error).message,
+    });
     return { ok: false as const, error: (e as Error).message };
   }
 }
@@ -192,9 +205,19 @@ export async function generateFlowAction(req: FlowRequest) {
       .select("id")
       .single();
     if (error) throw new Error(error.message);
+    log("info", { action: "ai.generate", status: "ok", userId: user.id });
     return { ok: true as const, generationId: data.id as string, flow };
   } catch (e) {
-    return { ok: false as const, error: (e as Error).message };
+    // Log the raw cause server-side; return a safe message to the client.
+    const friendly = friendlyAiError(e);
+    log("error", {
+      action: "ai.generate",
+      status: "error",
+      userId: user.id,
+      errorCode: friendly.code,
+      errorMessage: (e as Error).message,
+    });
+    return { ok: false as const, error: friendly.message };
   }
 }
 

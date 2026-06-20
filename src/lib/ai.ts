@@ -75,6 +75,22 @@ export function buildPromptString(req: FlowRequest): string {
   return `${req.durationMinutes}min ${req.level} ${req.classType} — goals: ${req.goals}`;
 }
 
+/** Maps any provider/network error to a safe, user-facing message + code. */
+export function friendlyAiError(e: unknown): { code: string; message: string } {
+  const raw = (e as Error)?.message?.toLowerCase() ?? "";
+  if (raw.includes("credit") || raw.includes("quota") || raw.includes("billing"))
+    return { code: "quota", message: "AI generation is temporarily unavailable (provider quota reached). Please try again later." };
+  if (raw.includes("not configured") || raw.includes("api_key") || raw.includes("api key"))
+    return { code: "config", message: "AI generation is not configured yet. Please add an AI key in the environment." };
+  if (raw.includes("rate") || raw.includes("429") || raw.includes("overloaded"))
+    return { code: "rate_limit", message: "AI is busy right now. Please try again in a few seconds." };
+  if (raw.includes("timeout") || raw.includes("timed out") || raw.includes("network") || raw.includes("fetch"))
+    return { code: "network", message: "The AI request timed out. Please try again." };
+  if (raw.includes("json") || raw.includes("parse") || raw.includes("no content"))
+    return { code: "parse", message: "The AI returned an unexpected response. Please try again." };
+  return { code: "unknown", message: "AI lesson generation is temporarily unavailable. Please try again." };
+}
+
 const SHAPE_HINT = `Return ONLY a single JSON object (no markdown, no code fences, no prose) with exactly this shape:
 {
   "title": string,
