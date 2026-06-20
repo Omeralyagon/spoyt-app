@@ -120,7 +120,9 @@ erDiagram
         text category
         text difficulty
         int duration_minutes
+        text cover_image
         text youtube_url
+        text music_url
         text visibility
     }
     flow_steps {
@@ -128,7 +130,9 @@ erDiagram
         uuid flow_id FK
         int order_index
         text title
+        text content
         int duration_minutes
+        text image_url
     }
     likes {
         uuid user_id PK
@@ -157,12 +161,18 @@ erDiagram
 |---|---|---|
 | **Supabase Auth** | Authentication | Email/password + **Google OAuth** sign-in; session cookies refreshed in middleware |
 | **Supabase Postgres** | Database | All app data (8 tables) with Row Level Security |
-| **Supabase Storage** | File storage | Avatars, flow covers, and certification files (private bucket) |
+| **Supabase Storage** | File storage | Avatars, certifications, and flow cover image/video uploads |
 | **Supabase RLS** | Authorization | Per-row access control; `is_admin()` guard for moderation |
-| **Anthropic Claude API** | AI (server-side) | Generates structured class flows (warmup→main→cooldown) as validated JSON |
-| **OpenAI API** | AI (optional) | Drop-in alternative provider (`AI_PROVIDER=openai`) |
-| **YouTube** | Embed | Optional class video embedded on flow detail |
+| **Google Gemini API** | AI (server-side) | **Active provider** — generates structured class flows (warmup→main→cooldown) as validated JSON |
+| **OpenAI API / Anthropic Claude** | AI (server-side) | Swappable alternatives via `AI_PROVIDER` (auto-detected by key) |
+| **Spotify / Apple Music** | Embed | Soundtrack player embedded on the flow page |
+| **YouTube** | Embed | Optional class video on the flow page |
 | **Vercel** | Hosting / CI | Production deployment of the Next.js app |
+
+> **Secrets stay server-side.** All AI provider keys and the Supabase service role
+> are used only in Next.js **Server Actions / Route Handlers** — never shipped to
+> the browser (equivalent to a Supabase Edge Function for key hiding).
+> A health check lives at `/api/ai-health`.
 
 ## 9. Getting started
 

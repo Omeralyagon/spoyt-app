@@ -37,6 +37,7 @@ erDiagram
         int duration_minutes
         text cover_image
         text youtube_url
+        text music_url
         text visibility "public | private"
         timestamptz created_at
     }
@@ -47,6 +48,7 @@ erDiagram
         text title
         text content
         int duration_minutes
+        text image_url
     }
     likes {
         uuid user_id PK,FK "auth.users"
