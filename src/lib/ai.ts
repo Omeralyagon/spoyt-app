@@ -177,10 +177,10 @@ async function generateWithGemini(req: FlowRequest): Promise<GeneratedFlow> {
   let lastErr = "";
   for (const model of models) {
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+                  headers: { "Content-Type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY! },
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\n${SHAPE_HINT}` }] },
           contents: [{ role: "user", parts: [{ text: buildUserPrompt(req) }] }],
