@@ -11,6 +11,7 @@ import {
   Clock,
   BadgeCheck,
   Eye,
+  Music,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -136,9 +137,16 @@ function FeedScreen({ item }: { item: FeedItem }) {
           <span className="rounded-full bg-black/45 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
             {flow.category}
           </span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-black/45 px-3 py-1 text-xs font-medium text-white backdrop-blur-md">
-            <Clock className="h-3.5 w-3.5" />
-            {flow.duration_minutes} {tc("minutes")}
+          <span className="inline-flex items-center gap-2">
+            {flow.music_url && (
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary/90 text-primary-foreground backdrop-blur-md">
+                <Music className="h-3.5 w-3.5" />
+              </span>
+            )}
+            <span className="inline-flex items-center gap-1 rounded-full bg-black/45 px-3 py-1 text-xs font-medium text-white backdrop-blur-md">
+              <Clock className="h-3.5 w-3.5" />
+              {flow.duration_minutes} {tc("minutes")}
+            </span>
           </span>
         </div>
 

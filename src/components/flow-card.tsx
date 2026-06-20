@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { Heart, Clock, BadgeCheck } from "lucide-react";
+import { Heart, Clock, BadgeCheck, Music } from "lucide-react";
 import { toast } from "sonner";
 import { Link, useRouter } from "@/i18n/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -100,6 +100,11 @@ export function FlowCard({
           {flow.duration_minutes}
           {tc("minutes")}
         </span>
+        {flow.music_url && (
+          <span className="absolute end-4 top-12 inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary/90 text-primary-foreground backdrop-blur-md">
+            <Music className="h-3.5 w-3.5" />
+          </span>
+        )}
 
         {/* action rail */}
         <div className="absolute bottom-28 end-3 z-10 flex flex-col items-center gap-4">
