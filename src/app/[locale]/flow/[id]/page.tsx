@@ -4,7 +4,7 @@ import { Clock, Gauge, Layers, BadgeCheck } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getFlowById } from "@/lib/queries";
-import { youtubeId, initials, isVideo } from "@/lib/utils";
+import { youtubeId, initials, isVideo, musicEmbed } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { FlowActions } from "@/components/flow-actions";
@@ -27,6 +27,7 @@ export default async function FlowPage({
   if (!flow) notFound();
 
   const vid = youtubeId(flow.youtube_url);
+  const music = musicEmbed(flow.music_url);
   const isOwn = flow.creator?.id && flow.creator.id === user?.profile?.id;
 
   return (
@@ -144,6 +145,23 @@ export default async function FlowPage({
             allowFullScreen
           />
         </div>
+      )}
+
+      {/* soundtrack */}
+      {music && (
+        <section className="mt-8">
+          <h2 className="mb-3 font-display text-2xl font-medium">
+            {t("soundtrack")}
+          </h2>
+          <iframe
+            src={music.src}
+            title="soundtrack"
+            loading="lazy"
+            className="w-full rounded-xl border border-border"
+            style={{ height: music.tall ? 380 : 152 }}
+            allow="autoplay *; encrypted-media *; clipboard-write; fullscreen *"
+          />
+        </section>
       )}
 
       {/* structure */}

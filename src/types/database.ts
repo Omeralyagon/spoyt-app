@@ -74,6 +74,7 @@ export interface Database {
           duration_minutes: number;
           cover_image: string | null;
           youtube_url: string | null;
+          music_url: string | null;
           visibility: Visibility;
           created_at: string;
         };
@@ -87,6 +88,7 @@ export interface Database {
           duration_minutes: number;
           cover_image?: string | null;
           youtube_url?: string | null;
+          music_url?: string | null;
           visibility?: Visibility;
           created_at?: string;
         };

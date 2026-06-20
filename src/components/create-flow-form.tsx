@@ -43,6 +43,7 @@ export function CreateFlowForm({ userId }: { userId: string }) {
   const [cover, setCover] = useState("");
   const [coverUploading, setCoverUploading] = useState(false);
   const [youtube, setYoutube] = useState("");
+  const [music, setMusic] = useState("");
   const [visibility, setVisibility] = useState<"public" | "private">("public");
   const [steps, setSteps] = useState<Step[]>([
     { title: "", content: "", duration: "", image: "", uploading: false },
@@ -116,6 +117,7 @@ export function CreateFlowForm({ userId }: { userId: string }) {
       description: description.trim(),
       cover_image: cover.trim(),
       youtube_url: youtube.trim(),
+      music_url: music.trim(),
       visibility,
       steps: valid.map((s) => ({
         title: s.title.trim(),
@@ -257,14 +259,25 @@ export function CreateFlowForm({ userId }: { userId: string }) {
         />
       </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="yt">{t("fieldYoutube")}</Label>
-        <Input
-          id="yt"
-          value={youtube}
-          onChange={(e) => setYoutube(e.target.value)}
-          placeholder="https://youtube.com/…"
-        />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="yt">{t("fieldYoutube")}</Label>
+          <Input
+            id="yt"
+            value={youtube}
+            onChange={(e) => setYoutube(e.target.value)}
+            placeholder="https://youtube.com/…"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="music">{t("fieldMusic")}</Label>
+          <Input
+            id="music"
+            value={music}
+            onChange={(e) => setMusic(e.target.value)}
+            placeholder="Spotify / Apple Music link"
+          />
+        </div>
       </div>
 
       {/* steps */}

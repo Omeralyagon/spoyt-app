@@ -126,6 +126,7 @@ export interface CreateFlowInput {
   description?: string;
   cover_image?: string;
   youtube_url?: string;
+  music_url?: string;
   visibility: "public" | "private";
   steps: {
     title: string;
@@ -151,6 +152,7 @@ async function insertFlowWithSteps(
       duration_minutes: input.duration_minutes,
       cover_image: input.cover_image || null,
       youtube_url: input.youtube_url || null,
+      music_url: input.music_url || null,
       visibility: input.visibility,
     })
     .select("id")

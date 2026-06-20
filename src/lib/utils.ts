@@ -38,6 +38,35 @@ export function formatCount(n: number): string {
   return `${v.toFixed(1).replace(/\.0$/, "")}M`;
 }
 
+/** Build an embeddable player URL for a Spotify or Apple Music link. */
+export function musicEmbed(
+  url?: string | null,
+): { src: string; tall: boolean } | null {
+  if (!url) return null;
+  try {
+    const u = new URL(url.trim());
+    if (u.hostname.includes("spotify.com")) {
+      const m = u.pathname.match(
+        /\/(track|album|playlist|artist|episode|show)\/([A-Za-z0-9]+)/,
+      );
+      if (m)
+        return {
+          src: `https://open.spotify.com/embed/${m[1]}/${m[2]}`,
+          tall: m[1] === "playlist" || m[1] === "album" || m[1] === "show",
+        };
+    }
+    if (u.hostname.includes("music.apple.com")) {
+      return {
+        src: `https://embed.music.apple.com${u.pathname}${u.search}`,
+        tall: true,
+      };
+    }
+  } catch {
+    /* not a valid URL */
+  }
+  return null;
+}
+
 /** True if the URL points to a video file (by extension). */
 export function isVideo(url?: string | null): boolean {
   if (!url) return false;
