@@ -13,7 +13,10 @@ export default async function CreatePage({
   const { locale } = await params;
   setRequestLocale(locale);
   const user = await getCurrentUser();
-  if (!user) redirect({ href: "/login", locale });
+  if (!user) {
+    redirect({ href: "/login", locale });
+    return null;
+  }
 
   const t = await getTranslations("create");
 
@@ -25,7 +28,7 @@ export default async function CreatePage({
         </h1>
         <p className="mt-1 text-muted-foreground">{t("subtitle")}</p>
       </header>
-      <CreateFlowForm />
+      <CreateFlowForm userId={user.id} />
     </div>
   );
 }

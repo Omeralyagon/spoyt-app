@@ -18,7 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Mascot } from "@/components/mascot";
 import { triggerStealBurst } from "@/components/steal-overlay";
 import { toggleLike, toggleSteal, toggleFollow } from "@/lib/actions";
-import { cn, initials } from "@/lib/utils";
+import { cn, initials, isVideo } from "@/lib/utils";
 import type { FlowCard } from "@/lib/queries";
 
 export interface FeedItem {
@@ -110,7 +110,16 @@ function FeedScreen({ item }: { item: FeedItem }) {
     <section className="snap-card flex h-[calc(100dvh-4rem)] items-center justify-center px-3 py-3">
       <div className="relative mx-auto h-full max-h-[760px] w-full max-w-md overflow-hidden rounded-[2rem] border border-border/60 bg-card">
         {/* cover */}
-        {flow.cover_image ? (
+        {flow.cover_image && isVideo(flow.cover_image) ? (
+          <video
+            src={flow.cover_image}
+            className="absolute inset-0 h-full w-full object-cover"
+            muted
+            loop
+            autoPlay
+            playsInline
+          />
+        ) : flow.cover_image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={flow.cover_image}

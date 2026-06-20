@@ -38,6 +38,12 @@ export function formatCount(n: number): string {
   return `${v.toFixed(1).replace(/\.0$/, "")}M`;
 }
 
+/** True if the URL points to a video file (by extension). */
+export function isVideo(url?: string | null): boolean {
+  if (!url) return false;
+  return /\.(mp4|webm|mov|m4v|ogg)(\?|$)/i.test(url);
+}
+
 export function initials(name?: string | null): string {
   if (!name) return "?";
   return name

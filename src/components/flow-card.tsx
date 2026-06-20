@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Mascot } from "@/components/mascot";
 import { triggerStealBurst } from "@/components/steal-overlay";
 import { toggleLike, toggleSteal } from "@/lib/actions";
-import { cn, initials } from "@/lib/utils";
+import { cn, initials, isVideo } from "@/lib/utils";
 import type { FlowCard as FlowCardData } from "@/lib/queries";
 
 export function FlowCard({
@@ -69,7 +69,16 @@ export function FlowCard({
         className="group relative block aspect-[4/5] overflow-hidden rounded-3xl border border-border/60 bg-card"
       >
         {/* cover */}
-        {flow.cover_image ? (
+        {flow.cover_image && isVideo(flow.cover_image) ? (
+          <video
+            src={flow.cover_image}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+            muted
+            loop
+            autoPlay
+            playsInline
+          />
+        ) : flow.cover_image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={flow.cover_image}

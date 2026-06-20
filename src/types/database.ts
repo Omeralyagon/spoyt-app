@@ -101,6 +101,7 @@ export interface Database {
           title: string;
           content: string | null;
           duration_minutes: number | null;
+          image_url: string | null;
         };
         Insert: {
           id?: string;
@@ -109,6 +110,7 @@ export interface Database {
           title: string;
           content?: string | null;
           duration_minutes?: number | null;
+          image_url?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["flow_steps"]["Insert"]>;
         Relationships: [];

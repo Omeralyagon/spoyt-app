@@ -4,7 +4,7 @@ import { Clock, Gauge, Layers, BadgeCheck } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getFlowById } from "@/lib/queries";
-import { youtubeId, initials } from "@/lib/utils";
+import { youtubeId, initials, isVideo } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { FlowActions } from "@/components/flow-actions";
@@ -33,7 +33,14 @@ export default async function FlowPage({
     <article className="container max-w-4xl py-10">
       {/* cover */}
       <div className="relative mb-8 aspect-[21/9] overflow-hidden rounded-xl bg-muted">
-        {flow.cover_image ? (
+        {flow.cover_image && isVideo(flow.cover_image) ? (
+          <video
+            src={flow.cover_image}
+            className="h-full w-full object-cover"
+            controls
+            playsInline
+          />
+        ) : flow.cover_image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={flow.cover_image}
@@ -167,6 +174,14 @@ export default async function FlowPage({
                     <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
                       {step.content}
                     </p>
+                  )}
+                  {step.image_url && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={step.image_url}
+                      alt=""
+                      className="mt-3 max-h-64 w-full rounded-lg object-cover"
+                    />
                   )}
                 </div>
               </li>

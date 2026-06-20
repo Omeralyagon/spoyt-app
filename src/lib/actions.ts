@@ -127,7 +127,12 @@ export interface CreateFlowInput {
   cover_image?: string;
   youtube_url?: string;
   visibility: "public" | "private";
-  steps: { title: string; content?: string; duration_minutes?: number }[];
+  steps: {
+    title: string;
+    content?: string;
+    duration_minutes?: number;
+    image_url?: string;
+  }[];
 }
 
 async function insertFlowWithSteps(
@@ -160,6 +165,7 @@ async function insertFlowWithSteps(
         title: s.title,
         content: s.content || null,
         duration_minutes: s.duration_minutes ?? null,
+        image_url: s.image_url || null,
       })),
     );
   }
