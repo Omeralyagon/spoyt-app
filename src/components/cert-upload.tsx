@@ -30,7 +30,7 @@ export function CertUpload({
       const { error: upErr } = await supabase.storage
         .from("certifications")
         .upload(path, file);
-      if (upErr) throw upErr;
+      if (upErr) throw new Error(`Upload failed: ${upErr.message}`);
 
       const { data: pub } = supabase.storage
         .from("certifications")
@@ -45,8 +45,8 @@ export function CertUpload({
 
       toast.success(t("certPending"));
       router.refresh();
-    } catch {
-      toast.error(tc("somethingWrong"));
+    } catch (err) {
+      toast.error((err as Error).message || tc("somethingWrong"));
     } finally {
       setBusy(false);
     }

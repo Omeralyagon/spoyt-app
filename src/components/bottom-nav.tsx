@@ -17,6 +17,12 @@ export function BottomNav({
   const t = useTranslations("nav");
   const pathname = usePathname();
 
+  // Hide app navigation on public/auth screens.
+  const PUBLIC = ["/login", "/register", "/forgot-password", "/reset-password"];
+  if (PUBLIC.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+    return null;
+  }
+
   const items = [
     { href: "/feed", label: t("home"), icon: Home },
     { href: "/discover", label: t("discover"), icon: Compass },

@@ -1,12 +1,16 @@
-import { getTranslations } from "next-intl/server";
+"use client";
+
+import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { UserNav } from "@/components/user-nav";
 import { Button } from "@/components/ui/button";
 
-export async function SiteHeader({
+const PUBLIC_PREFIXES = ["/login", "/register", "/forgot-password", "/reset-password"];
+
+export function SiteHeader({
   signedIn,
   profileId,
   fullName,
@@ -19,7 +23,13 @@ export async function SiteHeader({
   avatarUrl: string | null;
   isAdmin: boolean;
 }) {
-  const t = await getTranslations("nav");
+  const t = useTranslations("nav");
+  const pathname = usePathname();
+
+  // Public/auth screens render no application navigation.
+  if (PUBLIC_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+    return null;
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/70 backdrop-blur-xl">
