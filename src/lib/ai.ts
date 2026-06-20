@@ -138,6 +138,9 @@ async function generateWithAnthropic(req: FlowRequest): Promise<GeneratedFlow> {
 }
 
 async function generateWithOpenAI(req: FlowRequest): Promise<GeneratedFlow> {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error("AI is not configured (missing OPENAI_API_KEY).");
+  }
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -145,20 +148,25 @@ async function generateWithOpenAI(req: FlowRequest): Promise<GeneratedFlow> {
       Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
     },
     body: JSON.stringify({
-      model: process.env.OPENAI_MODEL || "gpt-4o",
+      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
       response_format: {
         type: "json_schema",
         json_schema: { name: "flow", schema: FLOW_SCHEMA, strict: true },
       },
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: `${SYSTEM_PROMPT}\n\n${SHAPE_HINT}` },
         { role: "user", content: buildUserPrompt(req) },
       ],
     }),
   });
-  if (!res.ok) throw new Error(`OpenAI error: ${res.status}`);
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`OpenAI ${res.status}: ${body.slice(0, 180)}`);
+  }
   const data = await res.json();
-  return JSON.parse(data.choices[0].message.content) as GeneratedFlow;
+  const text: string | undefined = data?.choices?.[0]?.message?.content;
+  if (!text) throw new Error("OpenAI returned no content");
+  return parseFlowJson(text);
 }
 
 async function generateWithGemini(req: FlowRequest): Promise<GeneratedFlow> {
