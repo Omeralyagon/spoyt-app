@@ -210,14 +210,16 @@ export async function generateFlowAction(req: FlowRequest) {
   } catch (e) {
     // Log the raw cause server-side; return a safe message to the client.
     const friendly = friendlyAiError(e);
+    const provider = (process.env.AI_PROVIDER || "anthropic").toLowerCase();
     log("error", {
       action: "ai.generate",
       status: "error",
       userId: user.id,
+      provider,
       errorCode: friendly.code,
       errorMessage: (e as Error).message,
     });
-    return { ok: false as const, error: friendly.message };
+    return { ok: false as const, error: `${friendly.message} (${provider})` };
   }
 }
 
