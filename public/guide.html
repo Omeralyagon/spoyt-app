@@ -138,14 +138,14 @@
     </div>
 
     <script>
-      const APP_URL = "/"; // live app
+      const APP_URL = "https://spoyt-app.vercel.app/"; // live app
       const T = {
         en: {
           dir: "ltr", skip: "Skip", back: "Back", next: "Next", start: "Start exploring", lang: "עברית",
           steps: [
             ["Welcome to Steal My Flow", "A living library of class flows for fitness & wellness instructors. Discover, save and create professional lesson plans."],
             ["Discover flows", "Browse the immersive home feed — one flow per screen. Open Discover to explore by category like Yoga, Pilates or HIIT."],
-            ["Steal a flow ⚡", "Tap the thief icon to “Steal” any flow straight into your personal library, ready to adapt and reuse. It's our signature move."],
+            ["Steal a flow ⚡", "“Stealing” = saving a copy of a flow into your own library, so you can open it later, adapt it and teach it as your own. Tap the green thief on any flow — it's added instantly to your Library → Saved."],
             ["Like & follow", "Like flows you love and follow the instructors that inspire you — build your own feed of great content."],
             ["Create your own", "Tap the green thief in the center to create — choose AI generation or write your flow step by step, with cover image, video and music."],
             ["AI Studio", "Describe a class — type, duration, level and goal — and get a structured warmup → main → cooldown flow you can save instantly."],
@@ -157,7 +157,7 @@
           steps: [
             ["ברוכים הבאים ל-Steal My Flow", "ספרייה חיה של תוכניות שיעור למדריכי כושר ו-וולנס. גלו, שמרו וצרו תוכניות שיעור מקצועיות."],
             ["גלו תוכניות", "גללו בפיד הבית האימרסיבי — flow אחד לכל מסך. בעמוד Discover אפשר לחקור לפי קטגוריה: יוגה, פילאטיס, HIIT ועוד."],
-            ["גנבו flow ⚡", "לחצו על אייקון הגנב כדי “לגנוב” כל flow ישירות לספרייה האישית שלכם — מוכן להתאמה ושימוש חוזר. זו הפעולה החתימה שלנו."],
+            ["גנבו flow ⚡", "“לגנוב” = לשמור עותק של ה-flow לספרייה האישית שלכם, כדי לפתוח אותו אחר כך, להתאים וללמד אותו כשלכם. לחצו על הגנב הירוק על כל flow — והוא מתווסף מיד ל-Library ← Saved."],
             ["אהבו ועקבו", "סמנו לייק לתוכניות שאהבתם ועקבו אחרי מדריכים שמעוררים בכם השראה — בנו לעצמכם פיד של תוכן מעולה."],
             ["צרו משלכם", "לחצו על הגנב הירוק במרכז כדי ליצור — בחרו יצירה ב-AI או כתיבה עצמאית, עם תמונת/וידאו קאבר ומוזיקה."],
             ["סטודיו AI", "תארו שיעור — סוג, משך, רמה ומטרה — וקבלו flow מובנה (חימום → עיקרי → שחרור) שניתן לשמור מיד."],
@@ -180,9 +180,20 @@
             <div class="pill"><div class="c">➕</div><span>Follow</span></div>
             <div class="pill"><div class="c">🔗</div><span>Share</span></div>
           </div>`,
-        () => `<div style="display:flex;flex-direction:column;align-items:center;gap:14px">
-            <span style="width:84px;height:84px;border-radius:99px;border:2px solid rgba(154,230,110,.7);background:var(--card);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1px rgba(154,230,110,.25),0 10px 30px -8px rgba(154,230,110,.55)"><img src="/mascot.png" style="width:52px;height:52px"></span>
-            <div style="display:flex;gap:8px"><span class="chip ai">✨ AI</span><span class="chip man">✍️ Manual</span></div>
+        () => `<div style="width:300px;background:#0f1115;border:1px solid var(--border);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px;font-size:11px">
+            <div style="height:46px;border:1px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--muted);gap:6px">⬆️ Cover image / video</div>
+            <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:7px;color:var(--muted)">Title — e.g. Morning Vinyasa</div>
+            <div style="display:flex;gap:6px">
+              <span style="flex:1;background:rgba(255,255,255,.05);border-radius:8px;padding:6px;text-align:center">Yoga</span>
+              <span style="flex:1;background:rgba(255,255,255,.05);border-radius:8px;padding:6px;text-align:center">Beginner</span>
+              <span style="width:48px;background:rgba(255,255,255,.05);border-radius:8px;padding:6px;text-align:center">45m</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:6px"><b style="color:var(--primary);font-family:'Bebas Neue'">01</b> Warmup &nbsp;·&nbsp; 🖼️ demo</div>
+            <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:6px"><b style="color:var(--primary);font-family:'Bebas Neue'">02</b> Main flow</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px">
+              <span style="color:var(--muted)">🎵 Spotify / Apple Music</span>
+              <span style="background:var(--primary);color:#0f1115;border-radius:99px;padding:6px 14px;font-weight:700">Publish flow</span>
+            </div>
           </div>`,
         () => `<div style="width:260px;display:flex;flex-direction:column;gap:8px">
             <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:8px;font-size:12px;color:var(--muted)">Vinyasa Yoga · 45 min · beginner</div>
