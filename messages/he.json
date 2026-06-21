@@ -166,6 +166,8 @@
     "editProfile": "עריכת פרופיל",
     "name": "שם",
     "photo": "תמונת פרופיל",
+    "cover": "תמונת נושא",
+    "coverHint": "העלו תמונה או וידאו",
     "bioField": "תיאור",
     "uploading": "מעלה…",
     "specialization": "התמחות",

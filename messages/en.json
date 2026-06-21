@@ -166,6 +166,8 @@
     "editProfile": "Edit profile",
     "name": "Name",
     "photo": "Profile photo",
+    "cover": "Cover banner",
+    "coverHint": "Upload image or video",
     "bioField": "Bio",
     "uploading": "Uploading…",
     "specialization": "Specialization",

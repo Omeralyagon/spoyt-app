@@ -315,6 +315,7 @@ export async function updateProfile(input: {
   bio?: string;
   specialization?: string;
   avatar_url?: string;
+  cover_url?: string;
 }) {
   const { supabase, user } = await requireUser();
   if (!user) return { ok: false as const, error: "auth" };

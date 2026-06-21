@@ -76,7 +76,7 @@ export default async function LocaleLayout({
             isAdmin={user?.profile?.role === "admin"}
           />
           <main
-            className={`min-h-[calc(100vh-4rem)] ${user ? "pb-24 md:pb-0" : ""}`}
+            className={`min-h-[calc(100vh-4rem)] ${user ? "pb-32 md:pb-28" : ""}`}
           >
             {children}
           </main>

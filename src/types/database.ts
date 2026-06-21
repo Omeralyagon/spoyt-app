@@ -19,6 +19,7 @@ export interface Database {
           user_id: string;
           full_name: string | null;
           avatar_url: string | null;
+          cover_url: string | null;
           bio: string | null;
           specialization: string | null;
           role: AppRole;
@@ -30,6 +31,7 @@ export interface Database {
           user_id: string;
           full_name?: string | null;
           avatar_url?: string | null;
+          cover_url?: string | null;
           bio?: string | null;
           specialization?: string | null;
           role?: AppRole;

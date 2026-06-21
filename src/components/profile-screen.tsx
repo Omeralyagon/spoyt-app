@@ -25,7 +25,7 @@ import { FollowButton } from "@/components/follow-button";
 import { CertUpload } from "@/components/cert-upload";
 import { EditProfileDialog } from "@/components/edit-profile-dialog";
 import { EmptyState } from "@/components/empty-state";
-import { cn, initials, formatCount } from "@/lib/utils";
+import { cn, initials, formatCount, isVideo } from "@/lib/utils";
 import type { FlowCard as FlowCardData } from "@/lib/queries";
 import type { Certification, Profile } from "@/types/database";
 
@@ -93,7 +93,8 @@ export function ProfileScreen(props: Props) {
   const coverY = useTransform(scrollY, [0, 300], [0, 60]);
   const coverScale = useTransform(scrollY, [0, 300], [1, 1.15]);
 
-  const coverImage = featured[0]?.cover_image ?? null;
+  // Dedicated profile banner first; otherwise fall back to a featured cover.
+  const coverImage = profile.cover_url ?? featured[0]?.cover_image ?? null;
   const memberYear = new Date(profile.created_at).getFullYear();
 
   return (
@@ -105,8 +106,23 @@ export function ProfileScreen(props: Props) {
           className="absolute inset-0"
         >
           {coverImage ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={coverImage} alt="" className="h-full w-full object-cover" />
+            isVideo(coverImage) ? (
+              <video
+                src={coverImage}
+                className="h-full w-full object-cover"
+                muted
+                loop
+                autoPlay
+                playsInline
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={coverImage}
+                alt=""
+                className="h-full w-full object-cover"
+              />
+            )
           ) : (
             <div className="h-full w-full bg-gradient-to-br from-primary/30 via-card to-secondary/30" />
           )}
@@ -194,6 +210,7 @@ export function ProfileScreen(props: Props) {
                   bio={profile.bio}
                   specialization={profile.specialization}
                   avatarUrl={profile.avatar_url}
+                  coverUrl={profile.cover_url}
                 />
                 <CertUpload profileId={profile.id} userId={props.userId} />
               </>
