@@ -16,8 +16,14 @@ import {
   FileCheck2,
   Clock,
   CalendarDays,
+  Camera,
+  X,
+  Loader2,
 } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { toast } from "sonner";
+import { Link, useRouter } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { updateProfile } from "@/lib/actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FlowCard } from "@/components/flow-card";
@@ -71,6 +77,50 @@ export function ProfileScreen(props: Props) {
   const t = useTranslations("profile");
   const tf = useTranslations("flow");
   const tc = useTranslations("common");
+  const router = useRouter();
+
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const [coverBusy, setCoverBusy] = useState(false);
+
+  /** Upload a new banner (image or video) straight from the profile page. */
+  async function onCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f || !props.userId) return;
+    setCoverBusy(true);
+    try {
+      const supabase = createClient();
+      const ext = f.name.split(".").pop() || "bin";
+      const path = `${props.userId}/profile/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage
+        .from("covers")
+        .upload(path, f, { upsert: true });
+      if (error) throw new Error(error.message);
+      const url = supabase.storage.from("covers").getPublicUrl(path)
+        .data.publicUrl;
+      const res = await updateProfile({ cover_url: url });
+      if (!res.ok) throw new Error("save_failed");
+      toast.success(tc("saved"));
+      router.refresh();
+    } catch (err) {
+      toast.error((err as Error).message || tc("somethingWrong"));
+    } finally {
+      setCoverBusy(false);
+    }
+  }
+
+  async function removeCover() {
+    setCoverBusy(true);
+    try {
+      const res = await updateProfile({ cover_url: null });
+      if (!res.ok) throw new Error("save_failed");
+      toast.success(tc("saved"));
+      router.refresh();
+    } catch {
+      toast.error(tc("somethingWrong"));
+    } finally {
+      setCoverBusy(false);
+    }
+  }
 
   const liked = new Set(props.liked);
   const stolen = new Set(props.stolen);
@@ -100,7 +150,10 @@ export function ProfileScreen(props: Props) {
   return (
     <div className="pb-12">
       {/* ============ HERO ============ */}
-      <div ref={coverRef} className="relative h-[38vh] min-h-[260px] w-full overflow-hidden">
+      <div
+        ref={coverRef}
+        className="group relative h-[38vh] min-h-[260px] w-full overflow-hidden"
+      >
         <motion.div
           style={{ y: coverY, scale: coverScale }}
           className="absolute inset-0"
@@ -128,6 +181,43 @@ export function ProfileScreen(props: Props) {
           )}
         </motion.div>
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-background/10" />
+
+        {/* owner banner controls — always visible on mobile, on hover for desktop */}
+        {isOwn && props.userId && (
+          <div className="absolute end-3 top-3 z-20 flex gap-2 opacity-100 transition-opacity duration-200 md:opacity-0 md:group-hover:opacity-100">
+            <button
+              type="button"
+              onClick={() => coverInputRef.current?.click()}
+              disabled={coverBusy}
+              aria-label={t("cover")}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur transition-colors hover:bg-black/80 disabled:opacity-60"
+            >
+              {coverBusy ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Camera className="h-4 w-4" />
+              )}
+            </button>
+            {profile.cover_url && (
+              <button
+                type="button"
+                onClick={removeCover}
+                disabled={coverBusy}
+                aria-label={t("removeCover")}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur transition-colors hover:bg-black/80 disabled:opacity-60"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+            <input
+              ref={coverInputRef}
+              type="file"
+              accept="image/*,video/*"
+              className="hidden"
+              onChange={onCoverChange}
+            />
+          </div>
+        )}
       </div>
 
       <div className="container -mt-20">

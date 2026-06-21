@@ -168,6 +168,7 @@
     "photo": "Profile photo",
     "cover": "Cover banner",
     "coverHint": "Upload image or video",
+    "removeCover": "Remove banner",
     "bioField": "Bio",
     "uploading": "Uploading…",
     "specialization": "Specialization",
