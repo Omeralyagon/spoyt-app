@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Plus, Trash2, GripVertical, Upload, X, ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -33,6 +33,7 @@ export function CreateFlowForm({ userId }: { userId: string }) {
   const t = useTranslations("create");
   const td = useTranslations("difficulty");
   const tc = useTranslations("common");
+  const ta = useTranslations("ai");
   const router = useRouter();
 
   const [title, setTitle] = useState("");
@@ -49,6 +50,36 @@ export function CreateFlowForm({ userId }: { userId: string }) {
     { title: "", content: "", duration: "", image: "", uploading: false },
   ]);
   const [saving, setSaving] = useState(false);
+
+  /** Hydrate the editor from an AI-generated flow handed off via sessionStorage. */
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("smf:prefill");
+      if (!raw) return;
+      sessionStorage.removeItem("smf:prefill");
+      const p = JSON.parse(raw);
+      if (p.title) setTitle(p.title);
+      if (p.category && CATEGORIES.includes(p.category)) setCategory(p.category);
+      if (p.difficulty) setDifficulty(p.difficulty);
+      if (p.duration) setDuration(String(p.duration));
+      if (p.description) setDescription(p.description);
+      if (Array.isArray(p.steps) && p.steps.length > 0) {
+        setSteps(
+          p.steps.map((s: { title?: string; content?: string; duration?: number | string }) => ({
+            title: s.title ?? "",
+            content: s.content ?? "",
+            duration: s.duration ? String(s.duration) : "",
+            image: "",
+            uploading: false,
+          })),
+        );
+      }
+      toast.success(ta("prefillLoaded"));
+    } catch {
+      /* ignore malformed prefill */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /** Upload a file to the public `covers` bucket and return its URL. */
   async function uploadFile(file: File, folder: string): Promise<string> {

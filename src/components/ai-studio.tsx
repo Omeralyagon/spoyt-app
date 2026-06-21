@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Sparkles, Clock, Gauge, Save, RefreshCw, Wand2 } from "lucide-react";
+import { Sparkles, Clock, Gauge, Save, RefreshCw, Wand2, ImagePlus } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { generateFlowAction, saveGeneratedFlow } from "@/lib/actions";
@@ -73,6 +73,29 @@ export function AiStudio({ history }: { history: AiGeneration[] }) {
     } else {
       toast.error(tc("somethingWrong"));
     }
+  }
+
+  /** Hand the generated flow to the full editor so the user can add a cover,
+   *  per-step images and music — just like manual creation — then publish. */
+  function editWithImages() {
+    if (!result) return;
+    const f = result.flow;
+    sessionStorage.setItem(
+      "smf:prefill",
+      JSON.stringify({
+        title: f.title,
+        category: f.category,
+        difficulty: f.difficulty,
+        duration: f.duration_minutes,
+        description: f.summary,
+        steps: f.steps.map((s) => ({
+          title: s.title,
+          content: s.content,
+          duration: s.duration_minutes,
+        })),
+      }),
+    );
+    router.push("/create");
   }
 
   return (
@@ -224,12 +247,16 @@ export function AiStudio({ history }: { history: AiGeneration[] }) {
               ))}
             </ol>
 
-            <div className="mt-6 flex gap-2">
-              <Button onClick={save} disabled={saving}>
-                <Save className="h-4 w-4" />
-                {t("saveFlow")}
+            <div className="mt-6 flex flex-wrap gap-2">
+              <Button onClick={editWithImages} disabled={saving}>
+                <ImagePlus className="h-4 w-4" />
+                {t("addImages")}
               </Button>
-              <Button variant="outline" onClick={generate} disabled={loading}>
+              <Button variant="outline" onClick={save} disabled={saving}>
+                <Save className="h-4 w-4" />
+                {t("publishNow")}
+              </Button>
+              <Button variant="ghost" onClick={generate} disabled={loading}>
                 <RefreshCw className="h-4 w-4" />
                 {t("regenerate")}
               </Button>
