@@ -75,10 +75,14 @@ export default async function LocaleLayout({
             avatarUrl={user?.profile?.avatar_url ?? null}
             isAdmin={user?.profile?.role === "admin"}
           />
-          <main className="min-h-[calc(100vh-4rem)] pb-24 md:pb-0">
+          <main
+            className={`min-h-[calc(100vh-4rem)] ${user ? "pb-24 md:pb-0" : ""}`}
+          >
             {children}
           </main>
-          <BottomNav signedIn={!!user} profileId={user?.profile?.id ?? null} />
+          {user && (
+            <BottomNav signedIn profileId={user?.profile?.id ?? null} />
+          )}
           <StealOverlay />
           <Toaster
             theme="dark"

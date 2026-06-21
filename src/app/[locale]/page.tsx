@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Compass, Sparkles, Bookmark, UserPlus, ArrowRight } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { Sparkles, Bookmark, UserPlus, ArrowRight, LogIn } from "lucide-react";
+import { Link, redirect } from "@/i18n/navigation";
+import { getCurrentUser } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -11,6 +12,11 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  // Logged-in users skip the marketing landing and go straight to the home screen.
+  const user = await getCurrentUser();
+  if (user) redirect({ href: "/feed", locale });
+
   const t = await getTranslations("home");
 
   const features = [
@@ -32,17 +38,11 @@ export default async function HomePage({
           <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
             {t("heroSubtitle")}
           </p>
-          <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <div className="mt-9 flex justify-center">
             <Button asChild size="lg">
-              <Link href="/feed" className="gap-2">
-                <Compass className="h-5 w-5" />
-                {t("ctaPrimary")}
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href="/generate" className="gap-2">
-                <Sparkles className="h-5 w-5" />
-                {t("ctaSecondary")}
+              <Link href="/login" className="gap-2">
+                <LogIn className="h-5 w-5" />
+                {t("ctaAuth")}
               </Link>
             </Button>
           </div>
@@ -106,8 +106,8 @@ export default async function HomePage({
         </ol>
         <div className="mt-12 text-center">
           <Button asChild variant="link" className="text-base">
-            <Link href="/feed" className="gap-1.5">
-              {t("ctaPrimary")}
+            <Link href="/login" className="gap-1.5">
+              {t("ctaAuth")}
               <ArrowRight className="h-4 w-4 rtl:rotate-180" />
             </Link>
           </Button>
