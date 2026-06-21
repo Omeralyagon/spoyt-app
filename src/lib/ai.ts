@@ -170,13 +170,16 @@ async function generateWithOpenAI(req: FlowRequest): Promise<GeneratedFlow> {
 }
 
 async function generateWithGemini(req: FlowRequest): Promise<GeneratedFlow> {
-  if (!process.env.GEMINI_API_KEY) {
+  const apiKey = geminiKey();
+  if (!apiKey) {
     throw new Error("AI is not configured (missing GEMINI_API_KEY).");
   }
   // Try a few known-good models so a single model rename never breaks us.
   const models = [
     process.env.GEMINI_MODEL,
     "gemini-2.0-flash",
+    "gemini-2.5-flash",
+    "gemini-flash-latest",
     "gemini-2.0-flash-lite",
     "gemini-1.5-flash",
     "gemini-1.5-flash-8b",
@@ -188,7 +191,7 @@ async function generateWithGemini(req: FlowRequest): Promise<GeneratedFlow> {
                 `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
       {
         method: "POST",
-                  headers: { "Content-Type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY! },
+                  headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\n${SHAPE_HINT}` }] },
           contents: [{ role: "user", parts: [{ text: buildUserPrompt(req) }] }],
@@ -212,14 +215,26 @@ async function generateWithGemini(req: FlowRequest): Promise<GeneratedFlow> {
   throw new Error(lastErr || "Gemini request failed");
 }
 
+/** Gemini key, tolerant of the common env-var names people use. */
+export function geminiKey(): string | undefined {
+  return (
+    process.env.GEMINI_API_KEY ||
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
+    process.env.GOOGLE_API_KEY ||
+    process.env.GOOGLE_AI_API_KEY ||
+    undefined
+  );
+}
+
 /** Resolve the active provider: explicit env, else auto-detect by which key exists. */
 export function activeProvider(): "anthropic" | "openai" | "gemini" {
   const explicit = process.env.AI_PROVIDER?.toLowerCase();
   if (explicit === "gemini" || explicit === "openai" || explicit === "anthropic")
     return explicit;
-  if (process.env.GEMINI_API_KEY) return "gemini";
+  if (geminiKey()) return "gemini";
   if (process.env.OPENAI_API_KEY) return "openai";
-  return "anthropic";
+  if (process.env.ANTHROPIC_API_KEY) return "anthropic";
+  return "gemini";
 }
 
 export async function generateFlow(req: FlowRequest): Promise<GeneratedFlow> {
