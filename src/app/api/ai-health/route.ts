@@ -11,13 +11,10 @@ export const dynamic = "force-dynamic";
  */
 export async function GET() {
   const env = {
-    AI_PROVIDER: process.env.AI_PROVIDER ?? null,
     geminiKeyDetected: !!geminiKey(),
     hasGEMINI_API_KEY: !!process.env.GEMINI_API_KEY,
     hasGOOGLE_GENERATIVE_AI_API_KEY: !!process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     hasGOOGLE_API_KEY: !!process.env.GOOGLE_API_KEY,
-    hasANTHROPIC_API_KEY: !!process.env.ANTHROPIC_API_KEY,
-    hasOPENAI_API_KEY: !!process.env.OPENAI_API_KEY,
     GEMINI_MODEL: process.env.GEMINI_MODEL ?? null,
   };
   const provider = activeProvider();

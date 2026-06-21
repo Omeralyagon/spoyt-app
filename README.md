@@ -163,8 +163,7 @@ erDiagram
 | **Supabase Postgres** | Database | All app data (8 tables) with Row Level Security |
 | **Supabase Storage** | File storage | Avatars, certifications, and flow cover image/video uploads |
 | **Supabase RLS** | Authorization | Per-row access control; `is_admin()` guard for moderation |
-| **Google Gemini API** | AI (server-side) | **Active provider** — generates structured class flows (warmup→main→cooldown) as validated JSON |
-| **OpenAI API / Anthropic Claude** | AI (server-side) | Swappable alternatives via `AI_PROVIDER` (auto-detected by key) |
+| **Google Gemini API** | AI (server-side) | Generates structured class flows (warmup→main→cooldown) as validated JSON |
 | **Spotify / Apple Music** | Embed | Soundtrack player embedded on the flow page |
 | **YouTube** | Embed | Optional class video on the flow page |
 | **Vercel** | Hosting / CI | Production deployment of the Next.js app |

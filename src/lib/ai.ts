@@ -1,13 +1,11 @@
 import "server-only";
-import Anthropic from "@anthropic-ai/sdk";
 import { CATEGORIES, DIFFICULTIES, type Difficulty } from "./constants";
 import type { GeneratedFlow } from "@/types/database";
 
 /**
  * AI layer for Steal My Flow — generates a structured class flow.
  *
- * Provider-swappable: defaults to Claude (Anthropic). Set AI_PROVIDER=openai
- * to route through OpenAI instead. Server-only — API keys never reach the client.
+ * Provider: Google Gemini only. Server-only — the API key never reaches the client.
  */
 
 export interface FlowRequest {
@@ -26,40 +24,6 @@ Design a single, well-structured class flow that a qualified instructor could te
 - The sum of step durations must equal the requested total duration.
 - Match the requested discipline, difficulty level and goal precisely. Be specific and professional — no filler.
 - Choose the single best-fitting category and difficulty from the allowed lists.`;
-
-// JSON schema for structured output (kept within the supported subset).
-const FLOW_SCHEMA = {
-  type: "object",
-  additionalProperties: false,
-  properties: {
-    title: { type: "string" },
-    summary: { type: "string" },
-    category: { type: "string", enum: [...CATEGORIES] },
-    difficulty: { type: "string", enum: [...DIFFICULTIES] },
-    duration_minutes: { type: "integer" },
-    steps: {
-      type: "array",
-      items: {
-        type: "object",
-        additionalProperties: false,
-        properties: {
-          title: { type: "string" },
-          content: { type: "string" },
-          duration_minutes: { type: "integer" },
-        },
-        required: ["title", "content", "duration_minutes"],
-      },
-    },
-  },
-  required: [
-    "title",
-    "summary",
-    "category",
-    "difficulty",
-    "duration_minutes",
-    "steps",
-  ],
-} as const;
 
 function buildUserPrompt(req: FlowRequest): string {
   const lang =
@@ -81,7 +45,7 @@ export function friendlyAiError(e: unknown): { code: string; message: string } {
   if (raw.includes("credit") || raw.includes("quota") || raw.includes("billing"))
     return { code: "quota", message: "AI generation is temporarily unavailable (provider quota reached). Please try again later." };
   if (raw.includes("not configured") || raw.includes("api_key") || raw.includes("api key"))
-    return { code: "config", message: "AI generation is not configured yet. Please add an AI key in the environment." };
+    return { code: "config", message: "AI generation is not configured yet. Please add a Gemini key in the environment." };
   if (raw.includes("rate") || raw.includes("429") || raw.includes("overloaded"))
     return { code: "rate_limit", message: "AI is busy right now. Please try again in a few seconds." };
   if (raw.includes("timeout") || raw.includes("timed out") || raw.includes("network") || raw.includes("fetch"))
@@ -116,57 +80,20 @@ function parseFlowJson(raw: string): GeneratedFlow {
   return JSON.parse(s) as GeneratedFlow;
 }
 
-async function generateWithAnthropic(req: FlowRequest): Promise<GeneratedFlow> {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    throw new Error("AI is not configured (missing ANTHROPIC_API_KEY).");
-  }
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-  const model = process.env.ANTHROPIC_MODEL || "claude-opus-4-8";
-
-  const response = await client.messages.create({
-    model,
-    max_tokens: 4096,
-    system: `${SYSTEM_PROMPT}\n\n${SHAPE_HINT}`,
-    messages: [{ role: "user", content: buildUserPrompt(req) }],
-  });
-
-  const text = response.content.find((b) => b.type === "text");
-  if (!text || text.type !== "text") {
-    throw new Error("AI returned no content");
-  }
-  return parseFlowJson(text.text);
+/** Gemini key, tolerant of the common env-var names people use. */
+export function geminiKey(): string | undefined {
+  return (
+    process.env.GEMINI_API_KEY ||
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
+    process.env.GOOGLE_API_KEY ||
+    process.env.GOOGLE_AI_API_KEY ||
+    undefined
+  );
 }
 
-async function generateWithOpenAI(req: FlowRequest): Promise<GeneratedFlow> {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error("AI is not configured (missing OPENAI_API_KEY).");
-  }
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
-      response_format: {
-        type: "json_schema",
-        json_schema: { name: "flow", schema: FLOW_SCHEMA, strict: true },
-      },
-      messages: [
-        { role: "system", content: `${SYSTEM_PROMPT}\n\n${SHAPE_HINT}` },
-        { role: "user", content: buildUserPrompt(req) },
-      ],
-    }),
-  });
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`OpenAI ${res.status}: ${body.slice(0, 180)}`);
-  }
-  const data = await res.json();
-  const text: string | undefined = data?.choices?.[0]?.message?.content;
-  if (!text) throw new Error("OpenAI returned no content");
-  return parseFlowJson(text);
+/** Always Gemini — kept for the health endpoint's response shape. */
+export function activeProvider(): "gemini" {
+  return "gemini";
 }
 
 async function generateWithGemini(req: FlowRequest): Promise<GeneratedFlow> {
@@ -188,10 +115,10 @@ async function generateWithGemini(req: FlowRequest): Promise<GeneratedFlow> {
   let lastErr = "";
   for (const model of models) {
     const res = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
       {
         method: "POST",
-                  headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\n${SHAPE_HINT}` }] },
           contents: [{ role: "user", parts: [{ text: buildUserPrompt(req) }] }],
@@ -215,36 +142,8 @@ async function generateWithGemini(req: FlowRequest): Promise<GeneratedFlow> {
   throw new Error(lastErr || "Gemini request failed");
 }
 
-/** Gemini key, tolerant of the common env-var names people use. */
-export function geminiKey(): string | undefined {
-  return (
-    process.env.GEMINI_API_KEY ||
-    process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
-    process.env.GOOGLE_API_KEY ||
-    process.env.GOOGLE_AI_API_KEY ||
-    undefined
-  );
-}
-
-/** Resolve the active provider: explicit env, else auto-detect by which key exists. */
-export function activeProvider(): "anthropic" | "openai" | "gemini" {
-  const explicit = process.env.AI_PROVIDER?.toLowerCase();
-  if (explicit === "gemini" || explicit === "openai" || explicit === "anthropic")
-    return explicit;
-  if (geminiKey()) return "gemini";
-  if (process.env.OPENAI_API_KEY) return "openai";
-  if (process.env.ANTHROPIC_API_KEY) return "anthropic";
-  return "gemini";
-}
-
 export async function generateFlow(req: FlowRequest): Promise<GeneratedFlow> {
-  const provider = activeProvider();
-  const flow =
-    provider === "openai"
-      ? await generateWithOpenAI(req)
-      : provider === "gemini"
-        ? await generateWithGemini(req)
-        : await generateWithAnthropic(req);
+  const flow = await generateWithGemini(req);
 
   // Defensive normalization so the result always satisfies the DB constraints.
   if (!CATEGORIES.includes(flow.category as (typeof CATEGORIES)[number])) {
