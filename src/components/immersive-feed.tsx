@@ -132,6 +132,14 @@ function FeedScreen({ item }: { item: FeedItem }) {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/40" />
 
+        {/* tapping the cover opens the lesson (sits below the action rail & content) */}
+        <Link
+          href={`/flow/${flow.id}`}
+          aria-label={flow.title}
+          className="absolute inset-0 z-0"
+        />
+
+
         {/* top chips */}
         <div className="absolute inset-x-0 top-0 flex items-center justify-between p-4">
           <span className="rounded-full bg-black/45 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
