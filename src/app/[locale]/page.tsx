@@ -1,7 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Sparkles, Bookmark, UserPlus, ArrowRight, LogIn } from "lucide-react";
-import { Link, redirect } from "@/i18n/navigation";
-import { getCurrentUser } from "@/lib/auth";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -13,10 +12,7 @@ export default async function HomePage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  // Logged-in users skip the marketing landing and go straight to the home screen.
-  const user = await getCurrentUser();
-  if (user) redirect({ href: "/feed", locale });
-
+  // The landing page always shows — the entry point is sign-up / log in.
   const t = await getTranslations("home");
 
   const features = [
