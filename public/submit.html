@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Steal My Flow — דף הגשה</title>
+    <link rel="icon" href="/mascot.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Heebo:wght@400;500;700;800;900&family=Space+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0f1115;
+        --card: #181b22;
+        --text: #f8f8f8;
+        --muted: #9aa3b2;
+        --primary: #9ae66e;
+        --secondary: #2ec4b6;
+        --border: #2a2f3a;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background:
+          radial-gradient(55rem 40rem at 85% -10%, rgba(154,230,110,0.09), transparent 60%),
+          radial-gradient(45rem 35rem at 0% 0%, rgba(46,196,182,0.07), transparent 55%),
+          var(--bg);
+        color: var(--text);
+        font-family: "Heebo", system-ui, sans-serif;
+        min-height: 100vh;
+        padding: 28px 18px 60px;
+      }
+      .wrap { max-width: 760px; margin: 0 auto; }
+      .label { font-family: "Space Mono", monospace; letter-spacing: 2px; text-transform: uppercase; font-size: 12px; color: var(--primary); }
+      .display { font-family: "Bebas Neue", "Heebo", sans-serif; letter-spacing: 1px; line-height: 1; }
+
+      /* hero */
+      .hero { text-align: center; padding: 14px 0 34px; }
+      .hero img.mascot {
+        width: 130px; height: 130px; object-fit: contain;
+        filter: drop-shadow(0 0 34px rgba(154,230,110,0.55));
+        animation: float 2.6s ease-in-out infinite;
+      }
+      @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
+      .hero h1 { font-family: "Bebas Neue","Heebo",sans-serif; font-size: 60px; margin: 14px 0 0; letter-spacing: 1px; }
+      .hero .sub { color: var(--muted); max-width: 540px; margin: 14px auto 0; line-height: 1.7; font-size: 16px; }
+
+      /* link cards */
+      .links { display: grid; gap: 14px; margin-top: 12px; }
+      a.link {
+        display: flex; align-items: center; gap: 16px; text-decoration: none; color: var(--text);
+        background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px 18px;
+        transition: transform .15s, border-color .15s, background .15s;
+      }
+      a.link:hover { transform: translateY(-2px); border-color: rgba(154,230,110,.5); background: #1c2029; }
+      a.link .ic { flex: none; width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; background: rgba(154,230,110,.12); }
+      a.link.primary .ic { background: var(--primary); }
+      a.link .body { flex: 1; min-width: 0; }
+      a.link .body b { display: block; font-size: 18px; }
+      a.link .body span { display: block; color: var(--muted); font-size: 13px; direction: ltr; text-align: start; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: "Space Mono", monospace; }
+      a.link .go { flex: none; color: var(--muted); font-size: 22px; }
+
+      /* ninja strip */
+      .strip { display: flex; gap: 10px; overflow-x: auto; padding: 6px 2px 10px; margin-top: 30px; }
+      .strip::-webkit-scrollbar { display: none; }
+      .strip img { width: 92px; height: 92px; border-radius: 16px; object-fit: cover; flex: none; border: 1px solid var(--border); }
+
+      /* section */
+      h2.sec { font-family: "Bebas Neue","Heebo",sans-serif; font-size: 26px; margin: 40px 0 14px; letter-spacing: .5px; }
+      .check { display: grid; gap: 10px; }
+      .row { display: flex; align-items: center; gap: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 13px 15px; }
+      .row .v { color: var(--primary); font-size: 18px; flex: none; }
+      .row .t { flex: 1; }
+      .row .t b { font-size: 15px; }
+      .row .t small { display: block; color: var(--muted); }
+      .row a { color: var(--primary); text-decoration: none; font-size: 13px; font-family: "Space Mono", monospace; }
+      .row a:hover { text-decoration: underline; }
+
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+      .chip { font-size: 12px; border: 1px solid var(--border); background: var(--card); border-radius: 99px; padding: 6px 12px; color: var(--text); }
+
+      footer { text-align: center; margin-top: 46px; color: var(--muted); font-size: 13px; }
+      footer b { color: var(--text); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <!-- HERO -->
+      <section class="hero">
+        <img class="mascot" src="/mascot.png" alt="Steal My Flow mascot" />
+        <p class="label" style="margin-top:16px">פרויקט גמר · הגשה</p>
+        <h1>STEAL MY FLOW</h1>
+        <p class="sub">
+          רשת חברתית למדריכי כושר ו-וולנס ליצירה, גילוי ושיתוף של תוכניות שיעור מקצועיות —
+          כשהפעולה המרכזית היא <b style="color:var(--primary)">"לגנוב" flow</b>: שמירת תוכנית
+          שיעור לספרייה האישית, מוכנה לשימוש חוזר והתאמה. בנייה ידנית או יצירה ב-AI.
+        </p>
+      </section>
+
+      <!-- LINKS -->
+      <section class="links">
+        <a class="link primary" href="https://spoyt-app.vercel.app/" target="_blank" rel="noopener">
+          <span class="ic">🟢</span>
+          <span class="body">
+            <b>האפליקציה החיה</b>
+            <span>spoyt-app.vercel.app</span>
+          </span>
+          <span class="go">↗</span>
+        </a>
+        <a class="link" href="https://spoyt-app.vercel.app/guide.html" target="_blank" rel="noopener">
+          <span class="ic">📖</span>
+          <span class="body">
+            <b>מדריך אינטראקטיבי — איך משתמשים</b>
+            <span>spoyt-app.vercel.app/guide.html</span>
+          </span>
+          <span class="go">↗</span>
+        </a>
+        <a class="link" href="https://github.com/Omeralyagon/spoyt-app" target="_blank" rel="noopener">
+          <span class="ic">💻</span>
+          <span class="body">
+            <b>קוד המקור ב-GitHub + README</b>
+            <span>github.com/Omeralyagon/spoyt-app</span>
+          </span>
+          <span class="go">↗</span>
+        </a>
+      </section>
+
+      <!-- NINJA STRIP -->
+      <div class="strip">
+        <img src="/categories/Yoga.png" alt="Yoga" />
+        <img src="/categories/Vinyasa_Yoga.png" alt="Vinyasa Yoga" />
+        <img src="/categories/Power_Yoga.png" alt="Power Yoga" />
+        <img src="/categories/Pilates.png" alt="Pilates" />
+        <img src="/categories/Barre.png" alt="Barre" />
+        <img src="/categories/HIIT.png" alt="HIIT" />
+        <img src="/categories/Strength.png" alt="Strength" />
+        <img src="/categories/Mobility.png" alt="Mobility" />
+        <img src="/categories/Functional_Training.png" alt="Functional Training" />
+        <img src="/categories/Stretching.png" alt="Stretching" />
+      </div>
+
+      <!-- DELIVERABLES -->
+      <h2 class="sec">רכיבי ההגשה</h2>
+      <div class="check">
+        <div class="row">
+          <span class="v">✔</span>
+          <span class="t"><b>קישור לפרויקט חי</b><small>פרוס על Vercel</small></span>
+          <a href="https://spoyt-app.vercel.app/" target="_blank" rel="noopener">פתח ↗</a>
+        </div>
+        <div class="row">
+          <span class="v">✔</span>
+          <span class="t"><b>GitHub ציבורי + README</b><small>13 סעיפי תיעוד</small></span>
+          <a href="https://github.com/Omeralyagon/spoyt-app#readme" target="_blank" rel="noopener">פתח ↗</a>
+        </div>
+        <div class="row">
+          <span class="v">✔</span>
+          <span class="t"><b>תרשים ERD</b><small>8 טבלאות · Mermaid</small></span>
+          <a href="https://github.com/Omeralyagon/spoyt-app/blob/main/supabase/erd.mmd" target="_blank" rel="noopener">פתח ↗</a>
+        </div>
+        <div class="row">
+          <span class="v">✔</span>
+          <span class="t"><b>שירותים ואינטגרציות</b><small>Google OAuth · Gemini AI · Supabase</small></span>
+          <a href="https://github.com/Omeralyagon/spoyt-app#8-external-services--integrations" target="_blank" rel="noopener">פתח ↗</a>
+        </div>
+      </div>
+
+      <!-- STACK -->
+      <h2 class="sec">טכנולוגיות</h2>
+      <div class="chips">
+        <span class="chip">Next.js 15 (App Router)</span>
+        <span class="chip">TypeScript</span>
+        <span class="chip">Tailwind CSS</span>
+        <span class="chip">Supabase (Postgres · Auth · Storage · RLS)</span>
+        <span class="chip">Google Gemini AI</span>
+        <span class="chip">Google OAuth</span>
+        <span class="chip">next-intl (עברית / English)</span>
+        <span class="chip">Framer Motion</span>
+        <span class="chip">Vercel</span>
+      </div>
+
+      <footer>
+        הוגש על ידי <b>עומר אליאגון</b> · Steal My Flow 🥷
+      </footer>
+    </div>
+  </body>
+</html>
