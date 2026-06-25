@@ -132,11 +132,12 @@ function FeedScreen({ item }: { item: FeedItem }) {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/40" />
 
-        {/* tapping the cover opens the lesson (sits below the action rail & content) */}
+        {/* tapping anywhere on the cover opens the lesson (action rail & bottom
+            content sit above this at z-20, so their buttons still work) */}
         <Link
           href={`/flow/${flow.id}`}
           aria-label={flow.title}
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-10"
         />
 
 
@@ -159,7 +160,7 @@ function FeedScreen({ item }: { item: FeedItem }) {
         </div>
 
         {/* right action rail */}
-        <div className="absolute bottom-32 end-3 z-10 flex flex-col items-center gap-5">
+        <div className="absolute bottom-32 end-3 z-20 flex flex-col items-center gap-5">
           <Rail label={like.n} onClick={onLike} active={like.on}>
             <Heart className={cn("h-7 w-7", like.on && "fill-current")} />
           </Rail>
@@ -211,7 +212,7 @@ function FeedScreen({ item }: { item: FeedItem }) {
         </div>
 
         {/* bottom content */}
-        <div className="absolute inset-x-0 bottom-0 p-5 pe-20">
+        <div className="absolute inset-x-0 bottom-0 z-20 p-5 pe-20">
           <Link href={`/flow/${flow.id}`}>
             <h2 className="line-clamp-3 font-display text-3xl leading-none text-white">
               {flow.title}
