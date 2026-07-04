@@ -18,7 +18,7 @@ function Shell() {
     <div className="mx-auto min-h-dvh max-w-md pb-24">
       {/* Slim header with settings */}
       <div className="sticky top-0 z-20 flex items-center justify-between border-b border-border/60 bg-background/80 px-4 py-2 backdrop-blur">
-        <span className="text-sm font-black tracking-tight">Spoyt · המתזמן החכם</span>
+        <span className="text-sm font-black tracking-tight">המתזמן החכם</span>
         <button
           onClick={() => setSettingsOpen(true)}
           aria-label="הגדרות"
