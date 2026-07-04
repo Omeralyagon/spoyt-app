@@ -27,7 +27,18 @@ export async function updateSession(
     },
   });
 
-  // Touch the user to keep the session fresh.
-  await supabase.auth.getUser();
+  // Touch the user to keep the session fresh — but never let a slow or
+  // unreachable Supabase hang the middleware, which would 504 the ENTIRE app
+  // (MIDDLEWARE_INVOCATION_TIMEOUT). Bound it and fail open.
+  try {
+    await Promise.race([
+      supabase.auth.getUser(),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("supabase-auth-timeout")), 3000),
+      ),
+    ]);
+  } catch {
+    // Session not refreshed this request — return anyway so the app still loads.
+  }
   return response;
 }
