@@ -12,5 +12,5 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   // Match the root and everything except static assets, API, auth callback, files.
-  matcher: ["/", "/((?!api|auth|_next|_vercel|.*\\..*).*)"],
+  matcher: ["/", "/((?!api|auth|scheduler|_next|_vercel|.*\\..*).*)"],
 };
